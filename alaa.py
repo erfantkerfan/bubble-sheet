@@ -24,7 +24,7 @@ class SheetNormalizer:
 
         try:
             cv2.destroyAllWindows()
-        except:
+        except Exception:
             pass
 
     # read and resize image
