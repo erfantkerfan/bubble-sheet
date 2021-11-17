@@ -43,15 +43,17 @@ class SheetNormalizer:
             cv2.waitKey(0)
 
     def get_border(self):
-        top_left_mark = self.markers[np.where(self.ids == 1)[0][0]]
-        top_right_mark = self.markers[np.where(self.ids == 2)[0][0]]
-        bottom_left_mark = self.markers[np.where(self.ids == 3)[0][0]]
-        bottom_right_mark = self.markers[np.where(self.ids == 4)[0][0]]
+        depth = 0
+        top_left_mark = self.markers[np.where(self.ids == 1)[depth][depth]]
+        top_right_mark = self.markers[np.where(self.ids == 2)[depth][depth]]
+        bottom_left_mark = self.markers[np.where(self.ids == 3)[depth][depth]]
+        bottom_right_mark = self.markers[np.where(self.ids == 4)[depth][depth]]
 
-        top_left_corner = (top_left_mark[0][0][0], top_left_mark[0][0][1])
-        top_right_corner = (top_right_mark[0][1][0], top_right_mark[0][1][1])
-        bottom_left_corner = (bottom_left_mark[0][3][0], bottom_left_mark[0][3][1])
-        bottom_right_corner = (bottom_right_mark[0][2][0], bottom_right_mark[0][2][1])
+        x, y = 0, 1
+        top_left_corner = (top_left_mark[depth][0][x], top_left_mark[depth][0][y])
+        top_right_corner = (top_right_mark[depth][1][x], top_right_mark[depth][1][y])
+        bottom_left_corner = (bottom_left_mark[depth][3][x], bottom_left_mark[depth][3][y])
+        bottom_right_corner = (bottom_right_mark[depth][2][x], bottom_right_mark[depth][2][y])
 
         self.borders = np.array([top_left_corner, top_right_corner, bottom_right_corner, bottom_left_corner])
 
