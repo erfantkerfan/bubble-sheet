@@ -18,7 +18,7 @@ class SheetNormalizer:
             if self.visual:
                 self.highlight_corners()
             self.four_point_transform()
-            self.getAdaptiveThresh()
+            self.get_adaptive_thresh()
         else:
             print('4 corner markers not found')
 
@@ -29,9 +29,8 @@ class SheetNormalizer:
 
     # read and resize image
     def load_image(self):
-        image = cv2.imread(self.image)
-        h = int(round(self.IMAGE_WIDTH * image.shape[0] / image.shape[1]))
-        self.frame = cv2.resize(image, (self.IMAGE_WIDTH, h), interpolation=cv2.INTER_LANCZOS4)
+        h = int(round(self.IMAGE_WIDTH * self.image.shape[0] / self.image.shape[1]))
+        self.frame = cv2.resize(self.image, (self.IMAGE_WIDTH, h), interpolation=cv2.INTER_LANCZOS4)
 
         arucoDict = aruco.Dictionary_get(cv2.aruco.DICT_6X6_50)
         # arucoDict = aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
@@ -50,10 +49,10 @@ class SheetNormalizer:
         bottom_right_mark = self.markers[np.where(self.ids == 4)[depth][depth]]
 
         x, y = 0, 1
-        top_left_corner = (top_left_mark[depth][0][x], top_left_mark[depth][0][y])
-        top_right_corner = (top_right_mark[depth][1][x], top_right_mark[depth][1][y])
-        bottom_left_corner = (bottom_left_mark[depth][3][x], bottom_left_mark[depth][3][y])
-        bottom_right_corner = (bottom_right_mark[depth][2][x], bottom_right_mark[depth][2][y])
+        top_left_corner = (top_left_mark[depth][3][x], top_left_mark[depth][3][y])
+        top_right_corner = (top_right_mark[depth][2][x], top_right_mark[depth][2][y])
+        bottom_left_corner = (bottom_left_mark[depth][0][x], bottom_left_mark[depth][0][y])
+        bottom_right_corner = (bottom_right_mark[depth][1][x], bottom_right_mark[depth][1][y])
 
         self.borders = np.array([top_left_corner, top_right_corner, bottom_right_corner, bottom_left_corner])
 
@@ -97,23 +96,19 @@ class SheetNormalizer:
             [maxWidth - 1, maxHeight - 1],
             [0, maxHeight - 1]], dtype="float32")
         # compute the perspective transform matrix and then apply it
-        M = cv2.getPerspectiveTransform(self.borders, dst)
+        matrix = cv2.getPerspectiveTransform(self.borders, dst)
         # warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
-        self.frame = cv2.warpPerspective(self.frame, M, (maxWidth, maxHeight), cv2.INTER_LINEAR,
+        self.frame = cv2.warpPerspective(self.frame, matrix, (maxWidth, maxHeight), cv2.INTER_LINEAR,
                                          borderMode=cv2.BORDER_CONSTANT,
                                          borderValue=(0, 0, 0))
         if self.visual:
             cv2.imshow('preview', self.frame)
             cv2.waitKey(0)
 
-    def getAdaptiveThresh(self):
+    def get_adaptive_thresh(self):
         frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2GRAY)
         self.frame = cv2.adaptiveThreshold(frame, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 51, 7)
 
         if self.visual:
             cv2.imshow('preview', self.frame)
             cv2.waitKey(0)
-
-
-IMAGE_NAME = 'alaa.png'
-x = SheetNormalizer(IMAGE_NAME, True)
