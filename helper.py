@@ -191,12 +191,12 @@ class BubbleReader:
                                             self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION)],
                                     key=lambda x: (int(x.pt[0]), int(x.pt[1]))))
             if self.visual:
-                blobs = cv2.drawKeypoints(self.image, whole_row, np.zeros((1, 1)), (0, 0, 255),
+                blobs = cv2.drawKeypoints(self.image_tresh, whole_row, np.zeros((1, 1)), (255, 0, 0),
                                           cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
                 blobs = cv2.drawKeypoints(blobs, whole_row, np.zeros((1, 1)), (0, 0, 255),
                                           cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
                 cv2.imshow("Filtering Circular Blobs Only", blobs)
-                cv2.waitKey(100)
+                cv2.waitKey(200)
             for column in range(self.QUESTION_COLUMNS):
                 question = whole_row[column * self.BUBBLE_PER_QUESTION: (column + 1) * self.BUBBLE_PER_QUESTION]
                 choice = None
