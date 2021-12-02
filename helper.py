@@ -108,9 +108,101 @@ class SheetNormalizer:
             cv2.waitKey(0)
 
     def get_adaptive_thresh(self):
-        frame = cv2.cvtColor(self.frame, cv2.COLOR_RGB2GRAY)
-        self.frame = cv2.adaptiveThreshold(frame, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 51, 7)
+        w = int(round(self.IMAGE_HEIGHT * self.frame.shape[1] / self.frame.shape[0]))
+        self.frame = cv2.resize(self.frame, (w, self.IMAGE_HEIGHT), interpolation=cv2.INTER_LANCZOS4)
+        temp = cv2.cvtColor(self.frame, cv2.COLOR_RGB2GRAY)
+        self.frame_tresh = cv2.adaptiveThreshold(temp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 51,
+                                                 7)
 
         if self.visual:
-            cv2.imshow('preview', self.frame)
+            cv2.imshow('preview', self.frame_tresh)
             cv2.waitKey(0)
+
+
+class BubbleReader:
+    MIN_AREA = 130
+    MIN_AREA_WITH_TRESH = 60
+    MIN_CIRCULARITY = 0.7
+    MIN_CONVEXITY = 0.7
+    MIN_INERTIA_RATIO = 0.001
+    MIN_DIST_BETWEEN_BLOBS = 15
+    QUESTION_COLUMNS = 6
+    QUESTION_ROWS = 50
+    BUBBLE_PER_QUESTION = 4
+
+    def __init__(self, sheet, sheet_tresh, visual=False):
+        self.image = sheet
+        self.image_tresh = sheet_tresh
+        self.visual = visual
+        self.bubble_count = self.QUESTION_COLUMNS * self.QUESTION_ROWS * self.BUBBLE_PER_QUESTION
+
+        self.detect_answers()
+
+    def make_detector(self, tresh=False):
+        # Set our filtering parameters
+        # Initialize parameter setting using cv2.SimpleBlobDetector
+        params = cv2.SimpleBlobDetector_Params()
+
+        # Set Area filtering parameters
+        params.filterByArea = True
+        if tresh:
+            params.minArea = self.MIN_AREA_WITH_TRESH
+        else:
+            params.minArea = self.MIN_AREA
+
+        # Set Circularity filtering parameters
+        params.filterByCircularity = True
+        params.minCircularity = self.MIN_CIRCULARITY
+
+        # Set Convexity filtering parameters
+        params.filterByConvexity = True
+        params.minConvexity = self.MIN_CONVEXITY
+
+        # Set inertia filtering parameters
+        params.filterByInertia = True
+        params.minInertiaRatio = self.MIN_INERTIA_RATIO
+
+        params.filterByInertia = True
+
+        params.minDistBetweenBlobs = self.MIN_DIST_BETWEEN_BLOBS
+
+        # Create a detector with the parameters
+        detector = cv2.SimpleBlobDetector_create(params)
+
+        return detector
+
+    def detect_answers(self):
+        # Detect filled blobs
+        keypoints_filled = self.make_detector().detect(self.image)
+
+        # Detect empty blobs
+        keypoints_empty = self.make_detector(tresh=True).detect(self.image_tresh)
+
+        keypoints = keypoints_filled + keypoints_empty
+        # keypoints = keypoints_filled
+
+        choices = list()
+        sorted_keypoints = list(sorted(keypoints, key=lambda x: (int(x.pt[1]), int(x.pt[0]))))
+        for row in range(self.QUESTION_ROWS):
+            whole_row = list(sorted(sorted_keypoints[
+                                    row * (self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION): (row + 1) * (
+                                            self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION)],
+                                    key=lambda x: (int(x.pt[0]), int(x.pt[1]))))
+            if self.visual:
+                blobs = cv2.drawKeypoints(self.image, whole_row, np.zeros((1, 1)), (0, 0, 255),
+                                          cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+                blobs = cv2.drawKeypoints(blobs, whole_row, np.zeros((1, 1)), (0, 0, 255),
+                                          cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+                cv2.imshow("Filtering Circular Blobs Only", blobs)
+                cv2.waitKey(100)
+            for column in range(self.QUESTION_COLUMNS):
+                question = whole_row[column * self.BUBBLE_PER_QUESTION: (column + 1) * self.BUBBLE_PER_QUESTION]
+                choice = None
+                for i, bubble in enumerate(question):
+                    if bubble in keypoints_filled:
+                        choice = i + 1
+                choices.append(choice)
+
+        arr = np.array(choices)
+        arr_2d = np.reshape(arr, (50, 6)).transpose().flatten().tolist()
+        print(arr_2d)
