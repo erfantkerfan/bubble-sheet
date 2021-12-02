@@ -1,3 +1,5 @@
+import pprint
+
 import cv2
 import numpy as np
 from cv2 import aruco
@@ -205,4 +207,4 @@ class BubbleReader:
 
         arr = np.array(choices)
         arr_2d = np.reshape(arr, (50, 6)).transpose().flatten().tolist()
-        print(arr_2d)
+        pprint.pprint(arr_2d)
