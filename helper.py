@@ -5,7 +5,7 @@ from cv2 import cv2
 
 
 class SheetNormalizer:
-    IMAGE_WIDTH = 1200
+    IMAGE_HEIGHT = 1100
 
     def __init__(self, image, visual=False):
         self.image = image
@@ -22,18 +22,20 @@ class SheetNormalizer:
         else:
             print('4 corner markers not found')
 
-        try:
-            cv2.destroyAllWindows()
-        except Exception:
-            pass
+        if self.visual:
+            try:
+                cv2.destroyAllWindows()
+            except Exception:
+                pass
 
     # read and resize image
     def load_image(self):
-        h = int(round(self.IMAGE_WIDTH * self.image.shape[0] / self.image.shape[1]))
-        self.frame = cv2.resize(self.image, (self.IMAGE_WIDTH, h), interpolation=cv2.INTER_LANCZOS4)
+        # w = int(round(self.IMAGE_HEIGHT * self.image.shape[1] / self.image.shape[0]))
+        # self.frame = cv2.resize(self.image, (w, self.IMAGE_HEIGHT), interpolation=cv2.INTER_LANCZOS4)
+        self.frame = self.image
 
-        arucoDict = aruco.Dictionary_get(cv2.aruco.DICT_6X6_50)
-        # arucoDict = aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
+        # arucoDict = aruco.Dictionary_get(cv2.aruco.DICT_6X6_50)
+        arucoDict = aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
         arucoParams = aruco.DetectorParameters_create()
         (self.markers, self.ids, rejected) = aruco.detectMarkers(self.frame, arucoDict, parameters=arucoParams)
 
