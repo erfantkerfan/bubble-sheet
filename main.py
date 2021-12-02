@@ -24,7 +24,7 @@ def create_app():
         web.get('/api/health/check', health),
 
         web.get('/api/v1/scan/minio', v1.minio),
-        web.get('/api/v1/scan/http', v1.http),
+        web.post('/api/v1/scan/http', v1.http),
         web.get('/api/v1/scan/direct', v1.direct),
         web.get('/api/v1/scan/test', v1.test),
     ])

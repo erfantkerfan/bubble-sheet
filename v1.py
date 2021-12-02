@@ -21,7 +21,8 @@ async def minio(request):
 
 
 async def http(request):
-    url = 'https://nodes.alaatv.com/test/alaa.png'
+    body = await request.post()
+    url = body.get('url')
     req = urllib.request.urlopen(url)
     arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
     img = cv2.imdecode(arr, -1)
@@ -37,7 +38,7 @@ async def direct(request):
 
 
 async def test(request):
-    image_name = 'alaa.png'
+    image_name = 'alaa.jpg'
     image = cv2.imread(image_name)
     sheet = helper.SheetNormalizer(image)
     # ////////
