@@ -12,9 +12,10 @@ async def health(request):
 
 
 def test():
-    image_name = 'alaa.png'
+    image_name = 'alaa.jpg'
     image = cv2.imread(image_name)
-    helper.SheetNormalizer(image, visual=True)
+    x = helper.SheetNormalizer(image, visual=True)
+    helper.BubbleReader(x.frame, x.frame_tresh, visual=True)
 
 
 def create_app():
