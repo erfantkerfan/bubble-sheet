@@ -36,7 +36,8 @@ if __name__ == '__main__':
 
     while True:
         ret, frame = cap.read()
-        arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_50)
+        # arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_50)
+        arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
         arucoParams = cv2.aruco.DetectorParameters_create()
         (corners, ids, rejected) = cv2.aruco.detectMarkers(frame, arucoDict, parameters=arucoParams)
 
