@@ -205,6 +205,7 @@ class BubbleReader:
                         choice = i + 1
                 choices.append(choice)
 
-        arr = np.array(choices)
-        arr_2d = np.reshape(arr, (50, 6)).transpose().flatten().tolist()
-        pprint.pprint(arr_2d)
+        arr_2d = np.reshape(np.array(choices), (50, 6)).transpose().flatten().tolist()
+        if self.visual:
+            pprint.pprint(arr_2d)
+        return arr_2d
