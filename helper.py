@@ -214,5 +214,6 @@ class BubbleReader:
             cv2.imshow("Filtering Circular Blobs Only", blobs)
             cv2.waitKey(0)
 
-        arr_2d = np.reshape(np.array(choices), (self.QUESTION_ROWS, self.QUESTION_COLUMNS)).transpose().flatten().tolist()
+        arr_2d = np.reshape(np.array(choices),
+                            (self.QUESTION_ROWS, self.QUESTION_COLUMNS)).transpose().flatten().tolist()
         return arr_2d
