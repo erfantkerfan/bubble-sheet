@@ -1,4 +1,3 @@
-import json
 import urllib
 
 import cv2
@@ -35,7 +34,6 @@ async def minio(request):
             choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
         choices = {index: x for index, x in enumerate(choices, start=1)}
         return web.json_response(choices)
-
 
 
 async def http(request):
@@ -75,6 +73,6 @@ async def test(request):
             return web.Response(status=status, text=text)
         else:
             choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
-        choices = {index: x for index, x in enumerate(choices, start=1)}
-        response = {'choices':choices}
+        choices = [{'q_n': question, 'c_n': choice} for (question, choice) in enumerate(choices)]
+        response = {'choices': choices}
         return web.json_response(response)
