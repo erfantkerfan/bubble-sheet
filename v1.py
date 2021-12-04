@@ -1,3 +1,4 @@
+import json
 import urllib
 
 import cv2
@@ -10,14 +11,31 @@ import helper
 
 async def minio(request):
     client = Minio('nodes.alaatv.com')
-    response = client.get_object('test', 'alaa.png')
+    response = client.get_object('test', 'alaa.jpg')
     file_str = response.read()
     np_img = np.frombuffer(file_str, np.uint8)
-    img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
-    sheet = helper.SheetNormalizer(img)
+    image = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
 
-    text = 'minio'
-    return web.Response(text=text)
+    try:
+        sheet = helper.SheetNormalizer(image)
+        frame, frame_tresh = sheet.get_adaptive_thresh()
+    except:
+        status = 500
+        text = "Could not load the image properly"
+        return web.Response(status=status, text=text)
+    else:
+        detctor = helper.BubbleReader(frame, frame_tresh)
+        try:
+            keypoints, keypoints_filled, keypoints_empty = detctor.detect_answers()
+        except:
+            status = 500
+            text = "number of keypoints not valid"
+            return web.Response(status=status, text=text)
+        else:
+            choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
+        choices = {index: x for index, x in enumerate(choices, start=1)}
+        return web.json_response(choices)
+
 
 
 async def http(request):
@@ -40,7 +58,22 @@ async def direct(request):
 async def test(request):
     image_name = 'alaa.jpg'
     image = cv2.imread(image_name)
-    sheet = helper.SheetNormalizer(image)
-    # ////////
-    text = 'test'
-    return web.Response(text=text)
+    try:
+        sheet = helper.SheetNormalizer(image)
+        frame, frame_tresh = sheet.get_adaptive_thresh()
+    except:
+        status = 500
+        text = "Could not load the image properly"
+        return web.Response(status=status, text=text)
+    else:
+        detctor = helper.BubbleReader(frame, frame_tresh)
+        try:
+            keypoints, keypoints_filled, keypoints_empty = detctor.detect_answers()
+        except:
+            status = 500
+            text = "number of keypoints not valid"
+            return web.Response(status=status, text=text)
+        else:
+            choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
+        choices = {index: x for index, x in enumerate(choices, start=1)}
+        return web.json_response(choices)

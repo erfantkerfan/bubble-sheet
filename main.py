@@ -15,8 +15,14 @@ def test():
     visual = True
     image_name = 'alaa.jpg'
     image = cv2.imread(image_name)
-    x = helper.SheetNormalizer(image, visual=visual)
-    helper.BubbleReader(x.frame, x.frame_tresh, visual=visual)
+
+    sheet = helper.SheetNormalizer(image, visual=visual)
+    frame, frame_tresh = sheet.get_adaptive_thresh()
+    detctor = helper.BubbleReader(frame, frame_tresh, visual=visual)
+    keypoints, keypoints_filled, keypoints_empty = detctor.detect_answers()
+    choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
+
+    print(choices)
 
 
 def create_app():
@@ -25,10 +31,10 @@ def create_app():
     app.add_routes([
         web.get('/api/health/check', health),
 
-        web.get('/api/v1/scan/minio', v1.minio),
+        web.post('/api/v1/scan/minio', v1.minio),
         web.post('/api/v1/scan/http', v1.http),
-        web.get('/api/v1/scan/direct', v1.direct),
-        web.get('/api/v1/scan/test', v1.test),
+        web.post('/api/v1/scan/direct', v1.direct),
+        web.post('/api/v1/scan/test', v1.test),
     ])
     return app
 

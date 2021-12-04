@@ -1,5 +1,3 @@
-import pprint
-
 import cv2
 import numpy as np
 from cv2 import aruco
@@ -18,21 +16,8 @@ class SheetNormalizer:
         self.visual = visual
         self.load_image()
         self.get_border()
-
-        if len(self.markers) == 4:
-            self.get_border()
-            if self.visual:
-                self.highlight_corners()
-            self.four_point_transform()
-            self.get_adaptive_thresh()
-        else:
-            print('4 corner markers not found')
-
-        if self.visual:
-            try:
-                cv2.destroyAllWindows()
-            except Exception:
-                pass
+        self.get_border()
+        self.four_point_transform()
 
     # read and resize image
     def load_image(self):
@@ -63,6 +48,9 @@ class SheetNormalizer:
         bottom_right_corner = (bottom_right_mark[depth][1][x], bottom_right_mark[depth][1][y])
 
         self.borders = np.array([top_left_corner, top_right_corner, bottom_right_corner, bottom_left_corner])
+
+        if self.visual:
+            self.highlight_corners()
 
     def highlight_corners(self):
         radius = 2
@@ -122,6 +110,11 @@ class SheetNormalizer:
         if self.visual:
             cv2.imshow('preview', self.frame_tresh)
             cv2.waitKey(0)
+            try:
+                cv2.destroyAllWindows()
+            except Exception:
+                pass
+        return self.frame, self.frame_tresh
 
 
 class BubbleReader:
@@ -140,8 +133,6 @@ class BubbleReader:
         self.image_tresh = sheet_tresh
         self.visual = visual
         self.bubble_count = self.QUESTION_COLUMNS * self.QUESTION_ROWS * self.BUBBLE_PER_QUESTION
-
-        self.detect_answers()
 
     def make_detector(self, tresh=False):
         # Set our filtering parameters
@@ -182,10 +173,14 @@ class BubbleReader:
 
         # Detect empty blobs
         keypoints_empty = self.make_detector(tresh=True).detect(self.image_tresh)
-
         keypoints = keypoints_filled + keypoints_empty
-        # keypoints = keypoints_filled
+        number_of_valid_keypoints = self.BUBBLE_PER_QUESTION * self.QUESTION_ROWS * self.QUESTION_COLUMNS
+        if len(keypoints) != number_of_valid_keypoints:
+            raise Exception("number of keypoints not valid")
 
+        return keypoints, keypoints_filled, keypoints_empty
+
+    def extract_choices(self, keypoints, keypoints_filled, keypoints_empty):
         choices = list()
         sorted_keypoints = list(sorted(keypoints, key=lambda x: (int(x.pt[1]), int(x.pt[0]))))
         for row in range(self.QUESTION_ROWS):
@@ -193,13 +188,13 @@ class BubbleReader:
                                     row * (self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION): (row + 1) * (
                                             self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION)],
                                     key=lambda x: (int(x.pt[0]), int(x.pt[1]))))
-            # if self.visual:
-            #     blobs = cv2.drawKeypoints(self.image_tresh, whole_row, np.zeros((1, 1)), BLUE,
-            #                               cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
-            #     blobs = cv2.drawKeypoints(blobs, whole_row, np.zeros((1, 1)), RED,
-            #                               cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-            #     cv2.imshow("Filtering Circular Blobs Only", blobs)
-            #     cv2.waitKey(200)
+            if self.visual:
+                blobs = cv2.drawKeypoints(self.image_tresh, whole_row, np.zeros((1, 1)), BLUE,
+                                          cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+                blobs = cv2.drawKeypoints(blobs, whole_row, np.zeros((1, 1)), RED,
+                                          cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+                cv2.imshow("Filtering Circular Blobs Only", blobs)
+                cv2.waitKey(100)
             for column in range(self.QUESTION_COLUMNS):
                 question = whole_row[column * self.BUBBLE_PER_QUESTION: (column + 1) * self.BUBBLE_PER_QUESTION]
                 choice = None
@@ -219,7 +214,5 @@ class BubbleReader:
             cv2.imshow("Filtering Circular Blobs Only", blobs)
             cv2.waitKey(0)
 
-        arr_2d = np.reshape(np.array(choices), (50, 6)).transpose().flatten().tolist()
-        if self.visual:
-            pprint.pprint(arr_2d)
+        arr_2d = np.reshape(np.array(choices), (self.QUESTION_ROWS, self.QUESTION_COLUMNS)).transpose().flatten().tolist()
         return arr_2d
