@@ -76,4 +76,5 @@ async def test(request):
         else:
             choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
         choices = {index: x for index, x in enumerate(choices, start=1)}
-        return web.json_response(choices)
+        response = {'choices':choices}
+        return web.json_response(response)
