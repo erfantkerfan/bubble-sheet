@@ -5,6 +5,10 @@ import numpy as np
 from cv2 import aruco
 from cv2 import cv2
 
+BLUE = (255, 0, 0)
+GREEN = (0, 255, 0)
+RED = (0, 0, 255)
+
 
 class SheetNormalizer:
     IMAGE_HEIGHT = 1100
@@ -62,15 +66,14 @@ class SheetNormalizer:
 
     def highlight_corners(self):
         radius = 2
-        color = (255, 0, 0)
         thickness = 2
-        self.frame = cv2.circle(self.frame, (int(self.borders[0][0]), int(self.borders[0][1])), radius, color,
+        self.frame = cv2.circle(self.frame, (int(self.borders[0][0]), int(self.borders[0][1])), radius, BLUE,
                                 thickness)
-        self.frame = cv2.circle(self.frame, (int(self.borders[1][0]), int(self.borders[1][1])), radius, color,
+        self.frame = cv2.circle(self.frame, (int(self.borders[1][0]), int(self.borders[1][1])), radius, BLUE,
                                 thickness)
-        self.frame = cv2.circle(self.frame, (int(self.borders[2][0]), int(self.borders[2][1])), radius, color,
+        self.frame = cv2.circle(self.frame, (int(self.borders[2][0]), int(self.borders[2][1])), radius, BLUE,
                                 thickness)
-        self.frame = cv2.circle(self.frame, (int(self.borders[3][0]), int(self.borders[3][1])), radius, color,
+        self.frame = cv2.circle(self.frame, (int(self.borders[3][0]), int(self.borders[3][1])), radius, BLUE,
                                 thickness)
         cv2.imshow('preview', self.frame)
         cv2.waitKey(0)
@@ -190,13 +193,13 @@ class BubbleReader:
                                     row * (self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION): (row + 1) * (
                                             self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION)],
                                     key=lambda x: (int(x.pt[0]), int(x.pt[1]))))
-            if self.visual:
-                blobs = cv2.drawKeypoints(self.image_tresh, whole_row, np.zeros((1, 1)), (255, 0, 0),
-                                          cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
-                blobs = cv2.drawKeypoints(blobs, whole_row, np.zeros((1, 1)), (0, 0, 255),
-                                          cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-                cv2.imshow("Filtering Circular Blobs Only", blobs)
-                cv2.waitKey(200)
+            # if self.visual:
+            #     blobs = cv2.drawKeypoints(self.image_tresh, whole_row, np.zeros((1, 1)), BLUE,
+            #                               cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+            #     blobs = cv2.drawKeypoints(blobs, whole_row, np.zeros((1, 1)), RED,
+            #                               cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+            #     cv2.imshow("Filtering Circular Blobs Only", blobs)
+            #     cv2.waitKey(200)
             for column in range(self.QUESTION_COLUMNS):
                 question = whole_row[column * self.BUBBLE_PER_QUESTION: (column + 1) * self.BUBBLE_PER_QUESTION]
                 choice = None
@@ -204,6 +207,17 @@ class BubbleReader:
                     if bubble in keypoints_filled:
                         choice = i + 1
                 choices.append(choice)
+        if self.visual:
+            blobs = cv2.drawKeypoints(self.image_tresh, keypoints_filled, np.zeros((1, 1)), GREEN,
+                                      cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+            blobs = cv2.drawKeypoints(blobs, keypoints_filled, np.zeros((1, 1)), GREEN,
+                                      cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+            blobs = cv2.drawKeypoints(blobs, keypoints_empty, np.zeros((1, 1)), RED,
+                                      cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+            blobs = cv2.drawKeypoints(blobs, keypoints_empty, np.zeros((1, 1)), RED,
+                                      cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+            cv2.imshow("Filtering Circular Blobs Only", blobs)
+            cv2.waitKey(0)
 
         arr_2d = np.reshape(np.array(choices), (50, 6)).transpose().flatten().tolist()
         if self.visual:
