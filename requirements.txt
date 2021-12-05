@@ -7,3 +7,4 @@ aiohttp~=3.8.1
 requests~=2.26.0
 redis~=4.0.2
 tqdm~=4.59.0
+python-dotenv~=0.15.0
