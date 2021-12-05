@@ -198,9 +198,13 @@ class BubbleReader:
             for column in range(self.QUESTION_COLUMNS):
                 question = whole_row[column * self.BUBBLE_PER_QUESTION: (column + 1) * self.BUBBLE_PER_QUESTION]
                 choice = None
+                flag = 0
                 for i, bubble in enumerate(question):
                     if bubble in keypoints_filled:
                         choice = i + 1
+                        flag += 1
+                if flag > 1:
+                    choice = None
                 choices.append(choice)
         if self.visual:
             blobs = cv2.drawKeypoints(self.image_tresh, keypoints_filled, np.zeros((1, 1)), GREEN,
