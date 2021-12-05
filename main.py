@@ -1,4 +1,5 @@
 import argparse
+import secrets
 
 import cv2
 from aiohttp import web
@@ -26,6 +27,10 @@ def test():
     print(choices)
 
 
+def token():
+    print(secrets.token_urlsafe(32))
+
+
 def create_app():
     app = web.Application()
     # Routes
@@ -41,15 +46,20 @@ def create_app():
 
 
 if __name__ == '__main__':
-    version = '0.1.0'
+    version = '0.3.1'
     parser = argparse.ArgumentParser(description='Process bubble sheets.')
     parser.add_argument('-v', '--version', action='version', version=f'{version}')
     parser.add_argument('-t', '--test', help="show visual result for debug.", action="store_true")
+    parser.add_argument('-T', '--token', help="generate a url_safe token.", action="store_true")
     parser.add_argument('-p', '--port', help="accept port number defaults to 8080", default=8080, type=int)
     args = parser.parse_args()
 
     if args.test:
         test()
+        exit()
+
+    if args.token:
+        token()
         exit()
 
     web.run_app(create_app(), port=args.port)
