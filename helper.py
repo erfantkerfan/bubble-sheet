@@ -1,11 +1,10 @@
 import cv2
 import numpy as np
+import redis
 from cv2 import aruco
 from cv2 import cv2
 
-BLUE = (255, 0, 0)
-GREEN = (0, 255, 0)
-RED = (0, 0, 255)
+from constants import *
 
 
 class SheetNormalizer:
@@ -219,3 +218,7 @@ class BubbleReader:
         arr_2d = np.reshape(np.array(choices, dtype=object),
                             (self.QUESTION_ROWS, self.QUESTION_COLUMNS)).transpose().flatten().tolist()
         return arr_2d
+
+
+def establish_redis():
+    return redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)

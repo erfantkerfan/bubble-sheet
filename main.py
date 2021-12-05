@@ -3,6 +3,8 @@ import secrets
 
 import cv2
 from aiohttp import web
+from redis.commands.json.path import Path
+from tqdm import tqdm
 
 import helper
 import v1
@@ -31,26 +33,33 @@ def token():
     print(secrets.token_urlsafe(32))
 
 
+def migrate():
+    client = helper.establish_redis()
+    from seeds import users
+    for user in tqdm(users):
+        token = user.pop('token')
+        client.json().set(f'bubblesheet:token:{token}', Path.rootPath(), user)
+
+
 def create_app():
     app = web.Application()
     # Routes
     app.add_routes([
         web.get('/api/health/check', health),
 
-        web.post('/api/v1/scan/minio', v1.minio),
-        web.post('/api/v1/scan/http', v1.http),
-        web.post('/api/v1/scan/direct', v1.direct),
-        web.post('/api/v1/scan/test', v1.test),
+        web.post('/api/v1/scan/{type}', v1.process),
     ])
     return app
 
 
 if __name__ == '__main__':
-    version = '0.3.1'
+    VERSION = '0.4.0'
+
     parser = argparse.ArgumentParser(description='Process bubble sheets.')
-    parser.add_argument('-v', '--version', action='version', version=f'{version}')
+    parser.add_argument('-v', '--version', action='version', version=f'{VERSION}')
     parser.add_argument('-t', '--test', help="show visual result for debug.", action="store_true")
     parser.add_argument('-T', '--token', help="generate a url_safe token.", action="store_true")
+    parser.add_argument('--migrate', help="export seeds folder to redis.", action="store_true")
     parser.add_argument('-p', '--port', help="accept port number defaults to 8080", default=8080, type=int)
     args = parser.parse_args()
 
@@ -60,6 +69,10 @@ if __name__ == '__main__':
 
     if args.token:
         token()
+        exit()
+
+    if args.migrate:
+        migrate()
         exit()
 
     web.run_app(create_app(), port=args.port)
