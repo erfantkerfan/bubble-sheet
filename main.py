@@ -22,6 +22,7 @@ def test():
     keypoints, keypoints_filled, keypoints_empty = detctor.detect_answers()
     choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
 
+    print(len(choices))
     print(choices)
 
 
