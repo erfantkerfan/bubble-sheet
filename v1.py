@@ -29,10 +29,12 @@ async def minio(request):
 
 async def url(request):
     body = await request.post()
-    url = body.get('url')
-    req = urllib.request.urlopen(url)
-    arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-    image = cv2.imdecode(arr, -1)
+    file_url = body.get('url')
+    try:
+        req = urllib.request.urlopen(file_url)
+    except:
+        raise Exception("path is not valid")
+    image = cv2.imdecode(np.asarray(bytearray(req.read()), dtype=np.uint8), -1)
     return image
 
 
