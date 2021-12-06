@@ -56,8 +56,11 @@ async def process(request):
             image = await url(request)
         elif type == 'direct':
             image = await direct(request)
-        else:
+        elif type == 'test':
             image = await test(request)
+        else:
+            status = 404
+            return web.Response(status=status)
     except:
         status = 500
         text = "Some thing was wrong with source of image"
