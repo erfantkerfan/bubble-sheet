@@ -39,7 +39,10 @@ async def url(request):
 
 
 async def direct(request):
-    image = 'direct'
+    post = await request.post()
+    image = post.get("image")
+    img_content = image.file.read()
+    image = cv2.imdecode(np.asarray(bytearray(img_content), dtype=np.uint8), -1)
     return image
 
 
