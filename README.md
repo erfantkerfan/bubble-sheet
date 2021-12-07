@@ -1,5 +1,68 @@
-start using with `python3 main.py --test`
+### Project setup with Docker:
 
-have fun
+1. run `cp .env.example .env`
+2. configure `APP_PORT` as the web interface port the default is `8050`
+3. run `docker-compose up --build -d`
+4. in case it's needed to send any inside docker use `docker-compose exec web COMMAND`
 
-`docker-compose exec web python3 main.py --migrate`
+### api documentation
+
+<details>
+  <summary> health check </summary>
+
+    GET `/api/health/check`
+
+</details>
+
+#### api v1 documentation
+
+<details>
+  <summary> sample response </summary>
+
+    POST `/api/v1/scan/test`
+
+</details>
+
+
+<details>
+  <summary> scan bubble-sheet form MinIO source </summary>
+
+    POST `/api/v1/scan/minio`
+
+```json
+{
+  "token": "hgRHGxrX6yd4Zz5gtSVxDkARcrkjAF_vf7PkkF8jDRA",
+  "path": "pics/alaa.jpg"
+}
+```
+
+</details>
+
+
+
+<details>
+  <summary> scan bubble-sheet form a url </summary>
+
+    POST `/api/v1/scan/url`
+
+```json
+{
+  "url": "https://nodes.alaatv.com/test/alaa.jpg"
+}
+```
+
+</details>
+
+
+<details>
+  <summary> scan bubble-sheet form a multipart-request </summary>
+
+    POST `/api/v1/scan/direct`
+
+```json
+{
+  "image": "[FILE]"
+}
+```
+
+</details>
