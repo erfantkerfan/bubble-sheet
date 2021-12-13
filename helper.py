@@ -105,9 +105,10 @@ class SheetNormalizer:
         temp = cv2.cvtColor(self.frame, cv2.COLOR_RGB2GRAY)
         self.frame_tresh = cv2.adaptiveThreshold(temp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 51,
                                                  7)
+        self.frame = cv2.bitwise_not(self.frame_tresh)
 
         if self.visual:
-            cv2.imshow('preview', self.frame_tresh)
+            cv2.imshow('preview', self.frame)
             cv2.waitKey(0)
             try:
                 cv2.destroyAllWindows()
@@ -117,7 +118,7 @@ class SheetNormalizer:
 
 
 class BubbleReader:
-    MIN_AREA = 125
+    MIN_AREA = 135
     MIN_AREA_WITH_TRESH = 55
     MIN_CIRCULARITY = 0.6
     MIN_CONVEXITY = 0.6
@@ -188,7 +189,7 @@ class BubbleReader:
                                             self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION)],
                                     key=lambda x: (int(x.pt[0]), int(x.pt[1]))))
             if self.visual:
-                blobs = cv2.drawKeypoints(self.image_tresh, whole_row, np.zeros((1, 1)), BLUE,
+                blobs = cv2.drawKeypoints(self.image, whole_row, np.zeros((1, 1)), BLUE,
                                           cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
                 blobs = cv2.drawKeypoints(blobs, whole_row, np.zeros((1, 1)), RED,
                                           cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
@@ -204,7 +205,7 @@ class BubbleReader:
                         flag += 1
                 choices.append(choice)
         if self.visual:
-            blobs = cv2.drawKeypoints(self.image_tresh, keypoints_filled, np.zeros((1, 1)), GREEN,
+            blobs = cv2.drawKeypoints(self.image, keypoints_filled, np.zeros((1, 1)), GREEN,
                                       cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
             blobs = cv2.drawKeypoints(blobs, keypoints_filled, np.zeros((1, 1)), GREEN,
                                       cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
