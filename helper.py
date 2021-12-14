@@ -15,7 +15,6 @@ class SheetNormalizer:
         self.visual = visual
         self.load_image()
         self.get_border()
-        self.get_border()
         self.four_point_transform()
 
     # read and resize image
