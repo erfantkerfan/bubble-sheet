@@ -1,3 +1,5 @@
+import io
+import pathlib
 import urllib
 
 import cv2
@@ -17,14 +19,32 @@ async def minio(request):
     credentials = client.json().get(f'bubblesheet:token:{token}')
 
     try:
-        client = Minio(credentials['endpoint'])
+        client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
         response = client.get_object(credentials['bucket'], path)
     except:
         raise Exception("path is not valid")
     file_str = response.read()
+    print(type(file_str))
     np_img = np.frombuffer(file_str, np.uint8)
     image = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
     return image
+
+
+async def minio_put(request, image):
+    body = await request.post()
+    token = body.get('token')
+    path_choices = body.get('path_choices', None)
+    if path_choices:
+        client = helper.establish_redis()
+        credentials = client.json().get(f'bubblesheet:token:{token}')
+
+        extension = pathlib.Path(path_choices).suffix
+        is_success, buffer = cv2.imencode(extension, image)
+        io_buf = io.BytesIO(buffer)
+        client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
+        client.put_object(credentials['bucket'], path_choices, io_buf, -1, part_size=10 * 1024 * 1024)
+
+    return path_choices
 
 
 async def url(request):
@@ -71,7 +91,6 @@ async def process(request: web.Request) -> web.Response:
         text = "Some thing was wrong with source of image"
         return web.Response(status=status, text=text)
 
-
     try:
         sheet = helper.SheetNormalizer(image)
         frame, frame_tresh = sheet.get_adaptive_thresh()
@@ -80,7 +99,7 @@ async def process(request: web.Request) -> web.Response:
         text = "Could not load the image properly"
         return web.Response(status=status, text=text)
     else:
-        detctor = helper.BubbleReader(frame, frame_tresh)
+        detctor = helper.BubbleReader(frame, frame_tresh, with_markers=True)
         try:
             keypoints, keypoints_filled, keypoints_empty = detctor.detect_answers()
         except:
@@ -91,4 +110,11 @@ async def process(request: web.Request) -> web.Response:
             choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
         choices = [{'q_n': question, 'c_n': choice} for (question, choice) in enumerate(choices, start=1)]
         response = {'choices': choices}
+
+        if type == 'minio':
+            try:
+                await minio_put(request, detctor.get_sheet_with_choices())
+            except:
+                raise Exception("something went wrong when saving file")
+
         return web.json_response(response)

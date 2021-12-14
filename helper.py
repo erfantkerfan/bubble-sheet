@@ -127,10 +127,11 @@ class BubbleReader:
     QUESTION_ROWS = 50
     BUBBLE_PER_QUESTION = 4
 
-    def __init__(self, sheet, sheet_tresh, visual=False):
+    def __init__(self, sheet, sheet_tresh, with_markers=False, visual=False):
         self.image = sheet
         self.image_tresh = sheet_tresh
         self.visual = visual
+        self.with_markers = with_markers
         self.bubble_count = self.QUESTION_COLUMNS * self.QUESTION_ROWS * self.BUBBLE_PER_QUESTION
 
     def make_detector(self, tresh=False):
@@ -203,7 +204,7 @@ class BubbleReader:
                         choice.append(i + 1)
                         flag += 1
                 choices.append(choice)
-        if self.visual:
+        if self.visual or self.with_markers:
             blobs = cv2.drawKeypoints(self.image, keypoints_filled, np.zeros((1, 1)), GREEN,
                                       cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
             blobs = cv2.drawKeypoints(blobs, keypoints_filled, np.zeros((1, 1)), GREEN,
@@ -212,12 +213,20 @@ class BubbleReader:
                                       cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
             blobs = cv2.drawKeypoints(blobs, keypoints_empty, np.zeros((1, 1)), RED,
                                       cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-            cv2.imshow("Filtering Circular Blobs Only", blobs)
-            cv2.waitKey(0)
+            self.sheet_with_answers = blobs
+            if self.visual:
+                cv2.imshow("Filtering Circular Blobs Only", blobs)
+                cv2.waitKey(0)
 
         arr_2d = np.reshape(np.array(choices, dtype=object),
                             (self.QUESTION_ROWS, self.QUESTION_COLUMNS)).transpose().flatten().tolist()
         return arr_2d
+
+    def get_sheet_with_choices(self):
+        if self.visual or (self.with_markers and self.sheet_with_answers is not None):
+            return self.sheet_with_answers
+        else:
+            raise Exception("sheet with answers has not been generated")
 
 
 def establish_redis():

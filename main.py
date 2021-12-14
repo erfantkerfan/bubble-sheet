@@ -16,15 +16,18 @@ async def health(request):
 
 def test():
     visual = True
+    with_markers = True
     image_name = 'alaa.jpg'
     image = cv2.imread(image_name)
 
     sheet = helper.SheetNormalizer(image, visual=visual)
     frame, frame_tresh = sheet.get_adaptive_thresh()
-    detctor = helper.BubbleReader(frame, frame_tresh, visual=visual)
+    detctor = helper.BubbleReader(frame, frame_tresh, with_markers=with_markers, visual=visual)
     keypoints, keypoints_filled, keypoints_empty = detctor.detect_answers()
     choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
+    sheet_with_choices = detctor.get_sheet_with_choices()
 
+    print(len(sheet_with_choices))
     print(len(choices))
     print(choices)
 

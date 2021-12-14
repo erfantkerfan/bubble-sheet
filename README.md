@@ -32,7 +32,8 @@
 ```json
 {
   "token": "hgRHGxrX6yd4Zz5gtSVxDkARcrkjAF_vf7PkkF8jDRA",
-  "path": "pics/alaa.jpg"
+  "path": "pics/alaa.jpg",
+  "path_choices": "output_pics/alaa.jpg"
 }
 ```
 
