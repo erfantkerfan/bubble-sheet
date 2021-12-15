@@ -36,6 +36,21 @@ def token():
     print(secrets.token_urlsafe(32))
 
 
+def set_token():
+    data = {
+        "token": secrets.token_urlsafe(32),
+        "endpoint": input('please enter an endpoint like "nodes.alaatv.com":'),
+        "bucket": input('please enter your desired bucket like "pictures":'),
+        "accessKey": input('please enter accessKey:'),
+        "secretKey": input('please enter secretKey:'),
+    }
+    token = data.pop('token')
+    client = helper.establish_redis()
+    client.json().set(f'bubblesheet:token:{token}', Path.rootPath(), data)
+
+    print(f'your token is "{token}" keep this it safe.')
+
+
 def migrate():
     client = helper.establish_redis()
     from seeds import users
@@ -62,6 +77,7 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--version', action='version', version=f'{VERSION}')
     parser.add_argument('-t', '--test', help="show visual result for debug.", action="store_true")
     parser.add_argument('-T', '--token', help="generate a url_safe token.", action="store_true")
+    parser.add_argument('-S', '--set', help="set up a token for minio endpoint", action="store_true")
     parser.add_argument('--migrate', help="export seeds folder to redis.", action="store_true")
     parser.add_argument('-p', '--port', help="accept port number defaults to 8080", default=8080, type=int)
     args = parser.parse_args()
@@ -76,6 +92,10 @@ if __name__ == '__main__':
 
     if args.migrate:
         migrate()
+        exit()
+
+    if args.set:
+        set_token()
         exit()
 
     web.run_app(create_app(), port=args.port)
