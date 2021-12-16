@@ -1,5 +1,6 @@
 import argparse
 import secrets
+from pprint import pprint
 
 import cv2
 from aiohttp import web
@@ -50,6 +51,14 @@ def set_token():
     print(f'your token is "{token}" keep this it safe.')
 
 
+def dump():
+    client = helper.establish_redis()
+    for key in client.scan_iter("bubblesheet:token:*"):
+        user = client.json().get(key, Path.rootPath())
+        user['token'] = str(key.decode('utf8'))
+        pprint(user)
+
+
 def migrate():
     client = helper.establish_redis()
     from seeds import users
@@ -76,7 +85,8 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--version', action='version', version=f'{VERSION}')
     parser.add_argument('-t', '--test', help="show visual result for debug.", action="store_true")
     parser.add_argument('-T', '--token', help="generate a url_safe token.", action="store_true")
-    parser.add_argument('-S', '--set', help="set up a token for minio endpoint", action="store_true")
+    parser.add_argument('-s', '--set', help="set up a token for minio endpoint", action="store_true")
+    parser.add_argument('-l', '--list', help="show available credentials and tokens", action="store_true")
     parser.add_argument('--migrate', help="export seeds folder to redis.", action="store_true")
     parser.add_argument('-p', '--port', help="accept port number defaults to 8080", default=8080, type=int)
     args = parser.parse_args()
@@ -87,6 +97,10 @@ if __name__ == '__main__':
 
     if args.token:
         token()
+        exit()
+
+    if args.list:
+        dump()
         exit()
 
     if args.migrate:
