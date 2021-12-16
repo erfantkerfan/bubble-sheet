@@ -14,6 +14,4 @@ EXPOSE 8080
 
 COPY . .
 
-COPY start-container /usr/local/bin/start-container
-RUN chmod +x /usr/local/bin/start-container
-ENTRYPOINT ["start-container"]
+CMD ["python3", "main.py"]
