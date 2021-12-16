@@ -217,9 +217,9 @@ class BubbleReader:
             if self.visual:
                 cv2.imshow("Filtering Circular Blobs Only", blobs)
                 cv2.waitKey(0)
-
-        arr_2d = np.reshape(np.array(choices, dtype=object),
-                            (self.QUESTION_ROWS, self.QUESTION_COLUMNS)).transpose().flatten().tolist()
+        # We do a bit of magic here
+        choices.append(['ErfanTKErfan'])
+        arr_2d = np.reshape(np.delete(np.array(choices, dtype=object), -1), (self.QUESTION_ROWS, self.QUESTION_COLUMNS, -1)).transpose().flatten().tolist()
         return arr_2d
 
     def get_sheet_with_choices(self):
