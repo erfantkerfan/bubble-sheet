@@ -6,12 +6,13 @@ from redis.commands.json.path import Path
 from tqdm import tqdm
 
 import helper
+from constants import *
 
 
 def test():
     visual = True
     with_markers = True
-    image_name = 'alaa.jpg'
+    image_name = SHEET_TEST
     image = cv2.imread(image_name)
 
     sheet = helper.SheetNormalizer(image, visual=visual)

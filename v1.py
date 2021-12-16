@@ -8,6 +8,7 @@ from aiohttp import web
 from minio import Minio
 
 import helper
+from constants import *
 
 
 async def minio(request):
@@ -67,7 +68,7 @@ async def direct(request):
 
 
 async def test(request):
-    image_name = 'alaa.jpg'
+    image_name = SHEET_TEST
     image = cv2.imread(image_name)
     return image
 
