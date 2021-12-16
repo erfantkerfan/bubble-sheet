@@ -219,7 +219,8 @@ class BubbleReader:
                 cv2.waitKey(0)
         # We do a bit of magic here
         choices.append(['ErfanTKErfan'])
-        arr_2d = np.reshape(np.delete(np.array(choices, dtype=object), -1), (self.QUESTION_ROWS, self.QUESTION_COLUMNS, -1)).transpose().flatten().tolist()
+        arr_2d = np.reshape(np.delete(np.array(choices, dtype=object), -1),
+                            (self.QUESTION_ROWS, self.QUESTION_COLUMNS)).transpose().flatten().tolist()
         return arr_2d
 
     def get_sheet_with_choices(self):
