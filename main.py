@@ -38,13 +38,12 @@ def token():
 
 def set_token():
     data = {
-        "token": secrets.token_urlsafe(32),
         "endpoint": input('please enter an endpoint like "nodes.alaatv.com":'),
         "bucket": input('please enter your desired bucket like "pictures":'),
         "accessKey": input('please enter accessKey:'),
         "secretKey": input('please enter secretKey:'),
     }
-    token = data.pop('token')
+    token = secrets.token_urlsafe(32)
     client = helper.establish_redis()
     client.json().set(f'bubblesheet:token:{token}', Path.rootPath(), data)
 
