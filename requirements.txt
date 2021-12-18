@@ -1,10 +1,10 @@
-opencv-contrib-python~=4.5.4.58
+opencv-contrib-python~=4.5.4
 numpy~=1.21.4
 imutils~=0.5.4
 scipy~=1.7.2
-minio~=7.1.0
+minio~=7.1.2
 aiohttp~=3.8.1
 requests~=2.26.0
 redis~=4.0.2
-tqdm~=4.59.0
-python-dotenv~=0.15.0
+tqdm~=4.62.3
+python-dotenv~=0.19.2
