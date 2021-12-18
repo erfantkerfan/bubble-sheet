@@ -23,7 +23,9 @@ def test():
     sheet_with_choices = detctor.get_sheet_with_choices()
 
     print(choices)
+    print()
     print(f'{len(choices)} questions')
+    print()
     print(f'{len(sheet_with_choices)} px')
 
 
