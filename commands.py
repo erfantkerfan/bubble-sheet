@@ -22,9 +22,9 @@ def test():
     choices = detctor.extract_choices(keypoints, keypoints_filled, keypoints_empty)
     sheet_with_choices = detctor.get_sheet_with_choices()
 
-    print(f'{len(sheet_with_choices)} px')
-    print(f'{len(choices)} questions')
     print(choices)
+    print(f'{len(choices)} questions')
+    print(f'{len(sheet_with_choices)} px')
 
 
 def token():
