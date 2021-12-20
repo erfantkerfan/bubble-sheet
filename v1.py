@@ -151,10 +151,8 @@ async def generate(request: web.Request) -> web.Response:
             box_size=20,
             border=1,
         )
-        exam, user = data['exam'], data['user']
-        # user = data['user']
-        qr.add_data(f'U{user}E{exam}')
-        # qr.add_data(f'{user}')
+        # TODO: validation for qrcode
+        qr.add_data(data['qrcode'])
         qr.make(fit=True)
         qr_img = qr.make_image(fill_color='#000000', back_color='#FFFFFF').convert('RGB')
         # load qr code in opencv
