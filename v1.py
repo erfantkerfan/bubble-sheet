@@ -1,9 +1,12 @@
 import io
 import pathlib
 import urllib
+import zipfile
+from zipfile import ZipFile
 
 import cv2
 import numpy as np
+import qrcode
 from aiohttp import web
 from minio import Minio
 
@@ -119,3 +122,60 @@ async def process(request: web.Request) -> web.Response:
                 raise Exception("something went wrong when saving file")
 
         return web.json_response(response)
+
+
+async def generate(request: web.Request) -> web.Response:
+    # load initial values
+    body = await request.json()
+    token = body['token']
+    output_path = body['path']
+    data_list = body['data']
+
+    # simple input validation
+    if not output_path.endswith('zip'):
+        return web.Response(status=422)
+
+    # create a zip file in memory
+    in_memory = io.BytesIO()
+    zip_file = ZipFile(in_memory, compression=zipfile.ZIP_DEFLATED, compresslevel=9, mode="w")
+
+    # load empty bubble sheet
+    bare_shet = cv2.imread(SHEET_PLAIN)
+
+    # loop through requested files
+    for i, data in enumerate(data_list):
+        # generate qr code object
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=20,
+            border=1,
+        )
+        exam, user = data['exam'], data['user']
+        # user = data['user']
+        qr.add_data(f'U{user}E{exam}')
+        # qr.add_data(f'{user}')
+        qr.make(fit=True)
+        qr_img = qr.make_image(fill_color='#000000', back_color='#FFFFFF').convert('RGB')
+        # load qr code in opencv
+        open_cv_qr_image = cv2.resize(np.array(qr_img)[:, :, ::-1].copy(), (QRCODE_SIZE, QRCODE_SIZE))
+        # replace desired pixels with qrcode
+        bare_shet[QRCODE_Y_OFFSET:QRCODE_Y_OFFSET + open_cv_qr_image.shape[0],
+        QRCODE_X_OFFSET:QRCODE_X_OFFSET + open_cv_qr_image.shape[1]] = open_cv_qr_image
+        # write qrcode to memory and add it to zip file
+        retval, buffer = cv2.imencode('.png', bare_shet)
+        zip_file.writestr(f'{i}.png', buffer)
+
+    # Close the zip file
+    zip_file.close()
+
+    # Go to beginning of zip file in memory
+    in_memory.seek(0)
+
+    client = helper.establish_redis()
+    credentials = client.json().get(f'bubblesheet:token:{token}')
+
+    client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
+    client.put_object(credentials['bucket'], output_path, in_memory, -1, part_size=10 * 1024 * 1024)
+
+    return web.Response(status=200)

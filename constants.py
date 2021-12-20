@@ -11,6 +11,10 @@ REDIS_DB = int(os.getenv('REDIS_DB', '15'))
 SHEET_PLAIN = 'sample images/original.png'
 SHEET_TEST = 'sample images/alaa.png'
 
+QRCODE_X_OFFSET = 188
+QRCODE_Y_OFFSET = 165
+QRCODE_SIZE = 310
+
 BLUE = (255, 0, 0)
 GREEN = (0, 255, 0)
 RED = (0, 0, 255)
