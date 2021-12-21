@@ -140,7 +140,7 @@ async def generate(request: web.Request) -> web.Response:
     zip_file = ZipFile(in_memory, compression=zipfile.ZIP_DEFLATED, compresslevel=9, mode="w")
 
     # load empty bubble sheet
-    bare_shet = cv2.imread(SHEET_PLAIN)
+    bare_sheet = cv2.imread(SHEET_PLAIN)
 
     # loop through requested files
     for i, data in enumerate(data_list):
@@ -158,10 +158,10 @@ async def generate(request: web.Request) -> web.Response:
         # load qr code in opencv
         open_cv_qr_image = cv2.resize(np.array(qr_img)[:, :, ::-1].copy(), (QRCODE_SIZE, QRCODE_SIZE))
         # replace desired pixels with qrcode
-        bare_shet[QRCODE_Y_OFFSET:QRCODE_Y_OFFSET + open_cv_qr_image.shape[0],
+        bare_sheet[QRCODE_Y_OFFSET:QRCODE_Y_OFFSET + open_cv_qr_image.shape[0],
         QRCODE_X_OFFSET:QRCODE_X_OFFSET + open_cv_qr_image.shape[1]] = open_cv_qr_image
         # write qrcode to memory and add it to zip file
-        retval, buffer = cv2.imencode('.png', bare_shet)
+        retval, buffer = cv2.imencode('.png', bare_sheet)
         zip_file.writestr(f'{i}.png', buffer)
 
     # Close the zip file
