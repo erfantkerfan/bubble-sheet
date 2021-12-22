@@ -40,5 +40,5 @@ if __name__ == '__main__':
         if getattr(args, command, None):
             getattr(commands, command)()
             exit()
-
+    print(f'server starting {VERSION}')
     web.run_app(create_app(), port=args.port)
