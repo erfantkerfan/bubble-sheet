@@ -7,6 +7,7 @@ from zipfile import ZipFile
 import cv2
 import numpy as np
 import qrcode
+from PIL import Image, ImageFont, ImageDraw
 from aiohttp import web
 from minio import Minio
 
@@ -142,8 +143,52 @@ async def generate(request: web.Request) -> web.Response:
     # load empty bubble sheet
     bare_sheet = cv2.imread(SHEET_PLAIN)
 
+    # load font for typing in pics
+    font_large = ImageFont.truetype('IRANYekanRegularFaNum.ttf', 35, encoding='unic')
+    font_medium = ImageFont.truetype('IRANYekanRegularFaNum.ttf', 30, encoding='unic')
+    font_small = ImageFont.truetype('IRANYekanRegularFaNum.ttf', 25, encoding='unic')
+
     # loop through requested files
     for i, data in enumerate(data_list):
+        # get a new instance of sheet
+        sheet = bare_sheet.copy()
+
+        # load image from cv2 to pil
+        bare_sheet_in_pil = Image.fromarray(cv2.cvtColor(sheet, cv2.COLOR_BGR2RGB))
+        # draw text on image
+        draw = ImageDraw.Draw(bare_sheet_in_pil)
+        # TODO: validation for all fields
+        if len(data['name']) <= 20:
+            draw.text(xy=(870, 268), text=data['name'], fill=(0, 0, 0), font=font_large, anchor='rm')
+        elif len(data['name']) <= 25:
+            draw.text(xy=(870, 268), text=data['name'], fill=(0, 0, 0), font=font_medium, anchor='rm')
+        else:
+            draw.text(xy=(870, 268), text=data['name'][:30], fill=(0, 0, 0), font=font_small, anchor='rm')
+
+        if len(data['ostan']) <= 10:
+            draw.text(xy=(1015, 370), text=data['ostan'], fill=(0, 0, 0), font=font_large, anchor='rm')
+        elif len(data['ostan']) <= 15:
+            draw.text(xy=(1015, 370), text=data['ostan'], fill=(0, 0, 0), font=font_medium, anchor='rm')
+        else:
+            draw.text(xy=(1015, 370), text=data['ostan'][:19], fill=(0, 0, 0), font=font_small, anchor='rm')
+
+        if len(data['shahr']) <= 7:
+            draw.text(xy=(700, 370), text=data['shahr'], fill=(0, 0, 0), font=font_large, anchor='rm')
+        elif len(data['shahr']) <= 12:
+            draw.text(xy=(700, 370), text=data['shahr'], fill=(0, 0, 0), font=font_medium, anchor='rm')
+        else:
+            draw.text(xy=(700, 370), text=data['shahr'][:16], fill=(0, 0, 0), font=font_small, anchor='rm')
+
+        draw.text(xy=(1320, 343), text=data['duration'], fill=(0, 0, 0), font=font_medium, anchor='rm')
+
+        draw.text(xy=(1665, 343), text=data['date'], fill=(0, 0, 0), font=font_medium, anchor='rm')
+
+        draw.text(xy=(1650, 400), text=data['start'], fill=(0, 0, 0), font=font_medium, anchor='rm')
+
+        draw.text(xy=(1780, 263), text=data['exam_description'], fill=(0, 0, 0), font=font_medium, anchor='rm')
+        # convert pil image back to  cv2 mode
+        sheet = np.asarray(bare_sheet_in_pil)
+
         # generate qr code object
         qr = qrcode.QRCode(
             version=1,
@@ -158,10 +203,15 @@ async def generate(request: web.Request) -> web.Response:
         # load qr code in opencv
         open_cv_qr_image = cv2.resize(np.array(qr_img)[:, :, ::-1].copy(), (QRCODE_SIZE, QRCODE_SIZE))
         # replace desired pixels with qrcode
-        bare_sheet[QRCODE_Y_OFFSET:QRCODE_Y_OFFSET + open_cv_qr_image.shape[0],
+        sheet = cv2.cvtColor(sheet, cv2.COLOR_RGB2BGR)
+        sheet[QRCODE_Y_OFFSET:QRCODE_Y_OFFSET + open_cv_qr_image.shape[0],
         QRCODE_X_OFFSET:QRCODE_X_OFFSET + open_cv_qr_image.shape[1]] = open_cv_qr_image
+
+        # cv2.imshow('test', sheet)
+        # cv2.waitKey(0)
+
         # write qrcode to memory and add it to zip file
-        retval, buffer = cv2.imencode('.png', bare_sheet)
+        retval, buffer = cv2.imencode('.png', sheet)
         zip_file.writestr(f'{i}.png', buffer)
 
     # Close the zip file
@@ -175,5 +225,5 @@ async def generate(request: web.Request) -> web.Response:
 
     client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
     client.put_object(credentials['bucket'], output_path, in_memory, -1, part_size=10 * 1024 * 1024)
-
+    # cv2.destroyAllWindows()
     return web.Response(status=200)
