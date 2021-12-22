@@ -207,9 +207,6 @@ async def generate(request: web.Request) -> web.Response:
         sheet[QRCODE_Y_OFFSET:QRCODE_Y_OFFSET + open_cv_qr_image.shape[0],
         QRCODE_X_OFFSET:QRCODE_X_OFFSET + open_cv_qr_image.shape[1]] = open_cv_qr_image
 
-        # cv2.imshow('test', sheet)
-        # cv2.waitKey(0)
-
         # write qrcode to memory and add it to zip file
         retval, buffer = cv2.imencode('.png', sheet)
         zip_file.writestr(f'{i}.png', buffer)
@@ -225,5 +222,4 @@ async def generate(request: web.Request) -> web.Response:
 
     client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
     client.put_object(credentials['bucket'], output_path, in_memory, -1, part_size=10 * 1024 * 1024)
-    # cv2.destroyAllWindows()
     return web.Response(status=200)
