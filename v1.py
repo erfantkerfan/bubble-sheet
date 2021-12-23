@@ -67,7 +67,7 @@ async def load_image_direct(request):
     post = await request.post()
     image = post.get("image")
     img_content = image.file.read()
-    image = cv2.imdecode(np.asarray(bytearray(img_content), dtype=np.uint8), -1)
+    image = cv2.imdecode(np.asarray(bytearray(img_content), dtype=np.uint8), cv2.IMREAD_UNCHANGED)
     return image
 
 
@@ -250,7 +250,7 @@ async def detect(request: web.Request) -> web.Response:
         # detect and decode
         data, vertices_array, binary_qrcode = detector.detectAndDecode(image)
         # if there is a QR code
-        if vertices_array is not None:
+        if vertices_array is not None and len(data) is not 0:
             status = 200
             text = data
         else:
