@@ -18,6 +18,7 @@ def create_app():
 
         web.post('/api/v1/scan/{type}', v1.scan),
         web.post('/api/v1/generate/minio', v1.generate),
+        web.post('/api/v1/detect/{type}', v1.detect),
     ])
     return app
 

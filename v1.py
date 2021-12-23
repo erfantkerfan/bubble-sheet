@@ -223,3 +223,41 @@ async def generate(request: web.Request) -> web.Response:
     client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
     client.put_object(credentials['bucket'], output_path, in_memory, -1, part_size=10 * 1024 * 1024)
     return web.Response(status=200)
+
+
+async def detect(request: web.Request) -> web.Response:
+    type = request.match_info['type']
+    try:
+        if type == 'minio':
+            image = await load_image_minio(request)
+        elif type == 'url':
+            image = await load_image_url(request)
+        elif type == 'direct':
+            image = await load_image_direct(request)
+        elif type == 'test':
+            image = await load_image_sample(request)
+        else:
+            status = 404
+            return web.Response(status=status)
+    except:
+        status = 500
+        text = "Some thing was wrong with source of image"
+        return web.Response(status=status, text=text)
+
+    try:
+        # initialize the cv2 QRCode detector
+        detector = cv2.QRCodeDetector()
+        # detect and decode
+        data, vertices_array, binary_qrcode = detector.detectAndDecode(image)
+        # if there is a QR code
+        if vertices_array is not None:
+            status = 200
+            text = data
+        else:
+            status = 500
+            text = "qr code could not be obtained"
+        return web.json_response(status=status, text=text)
+    except:
+        status = 500
+        text = "qrcode data could not be obtained"
+        return web.json_response(status=status, text=text)
