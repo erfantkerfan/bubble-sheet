@@ -15,7 +15,24 @@ import helper
 from constants import *
 
 
-async def scan_minio(request):
+async def minio_put(request, image):
+    body = await request.post()
+    token = body.get('token')
+    path_choices = body.get('path_choices', None)
+    if path_choices:
+        client = helper.establish_redis()
+        credentials = client.json().get(f'bubblesheet:token:{token}')
+
+        extension = pathlib.Path(path_choices).suffix
+        is_success, buffer = cv2.imencode(extension, image)
+        io_buf = io.BytesIO(buffer)
+        client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
+        client.put_object(credentials['bucket'], path_choices, io_buf, -1, part_size=10 * 1024 * 1024)
+
+    return path_choices
+
+
+async def load_image_minio(request):
     body = await request.post()
     token = body.get('token')
     path = body.get('path')
@@ -35,24 +52,7 @@ async def scan_minio(request):
     return image
 
 
-async def minio_put(request, image):
-    body = await request.post()
-    token = body.get('token')
-    path_choices = body.get('path_choices', None)
-    if path_choices:
-        client = helper.establish_redis()
-        credentials = client.json().get(f'bubblesheet:token:{token}')
-
-        extension = pathlib.Path(path_choices).suffix
-        is_success, buffer = cv2.imencode(extension, image)
-        io_buf = io.BytesIO(buffer)
-        client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
-        client.put_object(credentials['bucket'], path_choices, io_buf, -1, part_size=10 * 1024 * 1024)
-
-    return path_choices
-
-
-async def scan_url(request):
+async def load_image_url(request):
     body = await request.post()
     file_url = body.get('url')
     try:
@@ -63,7 +63,7 @@ async def scan_url(request):
     return image
 
 
-async def scan_direct(request):
+async def load_image_direct(request):
     post = await request.post()
     image = post.get("image")
     img_content = image.file.read()
@@ -71,7 +71,7 @@ async def scan_direct(request):
     return image
 
 
-async def scan_sample(request):
+async def load_image_sample(request):
     image_name = SHEET_TEST
     image = cv2.imread(image_name)
     return image
@@ -81,13 +81,13 @@ async def scan(request: web.Request) -> web.Response:
     type = request.match_info['type']
     try:
         if type == 'minio':
-            image = await scan_minio(request)
+            image = await load_image_minio(request)
         elif type == 'url':
-            image = await scan_url(request)
+            image = await load_image_url(request)
         elif type == 'direct':
-            image = await scan_direct(request)
+            image = await load_image_direct(request)
         elif type == 'test':
-            image = await scan_sample(request)
+            image = await load_image_sample(request)
         else:
             status = 404
             return web.Response(status=status)
