@@ -15,7 +15,7 @@ import helper
 from constants import *
 
 
-async def minio(request):
+async def scan_minio(request):
     body = await request.post()
     token = body.get('token')
     path = body.get('path')
@@ -52,7 +52,7 @@ async def minio_put(request, image):
     return path_choices
 
 
-async def url(request):
+async def scan_url(request):
     body = await request.post()
     file_url = body.get('url')
     try:
@@ -63,7 +63,7 @@ async def url(request):
     return image
 
 
-async def direct(request):
+async def scan_direct(request):
     post = await request.post()
     image = post.get("image")
     img_content = image.file.read()
@@ -71,7 +71,7 @@ async def direct(request):
     return image
 
 
-async def test(request):
+async def scan_sample(request):
     image_name = SHEET_TEST
     image = cv2.imread(image_name)
     return image
@@ -81,13 +81,13 @@ async def scan(request: web.Request) -> web.Response:
     type = request.match_info['type']
     try:
         if type == 'minio':
-            image = await minio(request)
+            image = await scan_minio(request)
         elif type == 'url':
-            image = await url(request)
+            image = await scan_url(request)
         elif type == 'direct':
-            image = await direct(request)
+            image = await scan_direct(request)
         elif type == 'test':
-            image = await test(request)
+            image = await scan_sample(request)
         else:
             status = 404
             return web.Response(status=status)
