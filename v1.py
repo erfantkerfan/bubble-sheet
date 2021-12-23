@@ -77,7 +77,7 @@ async def test(request):
     return image
 
 
-async def process(request: web.Request) -> web.Response:
+async def scan(request: web.Request) -> web.Response:
     type = request.match_info['type']
     try:
         if type == 'minio':

@@ -16,7 +16,7 @@ def create_app():
     app.add_routes([
         web.get('/api/health/check', health),
 
-        web.post('/api/v1/scan/{type}', v1.process),
+        web.post('/api/v1/scan/{type}', v1.scan),
         web.post('/api/v1/generate/minio', v1.generate),
     ])
     return app
