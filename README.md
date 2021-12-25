@@ -118,3 +118,50 @@
 ```
 
 </details>
+
+
+<details>
+  <summary> sheet generator using MinIO for storage </summary>
+
+    POST `/api/v1/generate/minio`
+
+```json
+{
+  "token": "hgRHGxrX6yd4Zz5gtSVxDkARcrkjAF_vf7PkkF8jDRA",
+  "path": "output/alaa.zip",
+  "data": [
+    {
+      "name": "عرفان قلی زاده",
+      "ostan": "تهران",
+      "shahr": "تهران",
+      "date": "1400/09/05",
+      "duration": "60 دقیقه",
+      "start": "07:30",
+      "exam_description": "آزمون شماره ۱۲ - پایه دوازدهم ریاضی",
+      "qrcode": "71bdcea2cb12aa4141711919,123456789"
+    },
+    {
+      "name": "سهراب ابوذرخانی فرد",
+      "ostan": "تهران",
+      "shahr": "تهران",
+      "date": "1400/09/05",
+      "duration": "60 دقیقه",
+      "start": "07:30",
+      "exam_description": "آزمون شماره 135 - پایه دهم ریاضی تجربی",
+      "qrcode": "31bdcea2cb14ea4181711920,987654321"
+    },
+    {
+      "name": "سید دانیال معین آل داوودی سادات پور",
+      "ostan": "سیستان و بلوچستان اطراف چهار راه",
+      "shahr": "اسلام آباد غرب اصل آباد",
+      "date": "1400/09/05",
+      "duration": "60 دقیقه",
+      "start": "07:30",
+      "exam_description": "آزمون شماره 135 - پایه دهم ریاضی تجربی",
+      "qrcode": "61bdcea2cb14ea4181711919,111111113"
+    }
+  ]
+}
+```
+
+</details>
