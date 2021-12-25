@@ -315,7 +315,7 @@
 			]
 		},
 		{
-			"name": "sheet genrator using minio",
+			"name": "sheet generator using minio",
 			"request": {
 				"method": "POST",
 				"header": [],
