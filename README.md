@@ -17,7 +17,7 @@
 #### api v1 documentation
 
 <details>
-  <summary> sample response </summary>
+  <summary> scan bubble-sheet sample response </summary>
 
     POST `/api/v1/scan/test`
 
@@ -62,7 +62,58 @@
 
 ```json
 {
-  "image": "[FILE]"
+  "image": "[FILE.jpg]"
+}
+```
+
+</details>
+
+
+<details>
+  <summary> detect qrcode sample response </summary>
+
+    POST `/api/v1/detect/test`
+
+</details>
+
+
+<details>
+  <summary> detect qrcode form MinIO source </summary>
+
+    POST `/api/v1/detect/minio`
+
+```json
+{
+  "token": "hgRHGxrX6yd4Zz5gtSVxDkARcrkjAF_vf7PkkF8jDRA",
+  "path": "pics/alaa.jpg"
+}
+```
+
+</details>
+
+
+<details>
+  <summary> detect qrcode form a url </summary>
+
+    POST `/api/v1/detect/url`
+
+```json
+{
+  "url": "https://nodes.alaatv.com/test/alaa.jpg"
+}
+```
+
+</details>
+
+
+<details>
+  <summary> detect qrcode form a multipart-request </summary>
+
+    POST `/api/v1/detect/direct`
+
+```json
+{
+  "image": "[FILE.jpg]"
 }
 ```
 
