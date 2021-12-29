@@ -210,8 +210,6 @@ class BubbleReader:
             blobs = cv2.drawKeypoints(blobs, keypoints_filled, np.zeros((1, 1)), GREEN,
                                       cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
             blobs = cv2.drawKeypoints(blobs, keypoints_empty, np.zeros((1, 1)), RED,
-                                      cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
-            blobs = cv2.drawKeypoints(blobs, keypoints_empty, np.zeros((1, 1)), RED,
                                       cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
             self.sheet_with_answers = blobs
             if self.visual:
