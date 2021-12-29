@@ -105,6 +105,7 @@ class SheetNormalizer:
         self.frame_tresh = cv2.adaptiveThreshold(temp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 95,
                                                  7)
         self.frame = cv2.bitwise_not(self.frame_tresh)
+        # print(cv2.calcHist(self.frame, [0], None, [2], [0, 256]))
 
         if self.visual:
             cv2.imshow('preview', self.frame)
