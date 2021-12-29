@@ -194,7 +194,7 @@ class BubbleReader:
                 blobs = cv2.drawKeypoints(blobs, whole_row, np.zeros((1, 1)), RED,
                                           cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
                 cv2.imshow("Filtering Circular Blobs Only", blobs)
-                cv2.waitKey(100)
+                cv2.waitKey(10)
             for column in range(self.QUESTION_COLUMNS):
                 question = whole_row[column * self.BUBBLE_PER_QUESTION: (column + 1) * self.BUBBLE_PER_QUESTION]
                 choice = []
