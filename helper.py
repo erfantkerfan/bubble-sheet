@@ -177,7 +177,7 @@ class BubbleReader:
         keypoints = keypoints_filled + keypoints_empty
         number_of_valid_keypoints = self.BUBBLE_PER_QUESTION * self.QUESTION_ROWS * self.QUESTION_COLUMNS
         if len(keypoints) != number_of_valid_keypoints:
-            raise Exception("number of keypoints not valid")
+            raise Exception(f"number of keypoints not valid. found {len(keypoints)}")
 
         return keypoints, keypoints_filled, keypoints_empty
 

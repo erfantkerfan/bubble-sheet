@@ -208,8 +208,8 @@ async def generate(request: web.Request) -> web.Response:
         QRCODE_X_OFFSET:QRCODE_X_OFFSET + open_cv_qr_image.shape[1]] = open_cv_qr_image
 
         # write qrcode to memory and add it to zip file
-        retval, buffer = cv2.imencode('.png', sheet)
-        zip_file.writestr(f'{i}.png', buffer)
+        retval, buffer = cv2.imencode('.jpg', sheet)
+        zip_file.writestr(f'{i}.jpg', buffer)
 
     # Close the zip file
     zip_file.close()
@@ -248,9 +248,12 @@ async def detect(request: web.Request) -> web.Response:
         # initialize the cv2 QRCode detector
         detector = cv2.QRCodeDetector()
         # detect and decode
-        data, vertices_array, binary_qrcode = detector.detectAndDecode(image)
+        temp = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        frame_tresh = cv2.adaptiveThreshold(temp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 95,
+                                                 7)
+        data, vertices_array, binary_qrcode = detector.detectAndDecode(frame_tresh)
         # if there is a QR code
-        if vertices_array is not None and len(data) is not 0:
+        if vertices_array is not None and len(data) != 0:
             status = 200
             text = data
         else:

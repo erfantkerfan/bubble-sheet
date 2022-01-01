@@ -54,12 +54,12 @@
 								},
 								{
 									"key": "path",
-									"value": "alaa.png",
+									"value": "test.jpg",
 									"type": "text"
 								},
 								{
 									"key": "path_choices",
-									"value": "output/alaa.png",
+									"value": "output/alaa.jpg",
 									"type": "text"
 								}
 							],
@@ -96,7 +96,7 @@
 							"formdata": [
 								{
 									"key": "url",
-									"value": "https://nodes.alaatv.com/test/alaa.jpg",
+									"value": "https://nodes.alaatv.com/test/test.jpg",
 									"type": "text"
 								}
 							],
@@ -134,7 +134,7 @@
 								{
 									"key": "image",
 									"type": "file",
-									"src": "/home/alaa/storage/Projects/bubble-sheet/sample images/alaa.jpg"
+									"src": "/home/alaa/storage/Projects/bubble-sheet/sample images/test.jpg"
 								}
 							],
 							"options": {
@@ -211,7 +211,7 @@
 								},
 								{
 									"key": "path",
-									"value": "alaa.png",
+									"value": "IMG_20211225_155254_429.jpg",
 									"type": "text"
 								}
 							],
@@ -248,7 +248,7 @@
 							"formdata": [
 								{
 									"key": "url",
-									"value": "https://nodes.alaatv.com/test/alaa.jpg",
+									"value": "https://nodes.alaatv.com/test/test.jpg",
 									"type": "text"
 								}
 							],
@@ -286,7 +286,7 @@
 								{
 									"key": "image",
 									"type": "file",
-									"src": "/home/alaa/storage/Projects/bubble-sheet/sample images/alaa.jpg"
+									"src": "/home/alaa/storage/Projects/bubble-sheet/sample images/test.jpg"
 								}
 							],
 							"options": {
