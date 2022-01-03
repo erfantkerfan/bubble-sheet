@@ -209,7 +209,7 @@ async def generate(request: web.Request) -> web.Response:
 
         # write qrcode to memory and add it to zip file
         retval, buffer = cv2.imencode('.jpg', sheet)
-        zip_file.writestr(f'{i}.jpg', buffer)
+        zip_file.writestr(f'{data["name"]}.jpg', buffer)
 
     # Close the zip file
     zip_file.close()
