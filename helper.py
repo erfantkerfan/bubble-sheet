@@ -125,16 +125,13 @@ class BubbleReader:
     MIN_CONVEXITY = 0.7
     MIN_INERTIA_RATIO = 0.15
     MIN_DIST_BETWEEN_BLOBS = 13
-    QUESTION_COLUMNS = 6
-    QUESTION_ROWS = 50
-    BUBBLE_PER_QUESTION = 4
 
     def __init__(self, sheet, sheet_tresh, with_markers=False, visual=False):
         self.image = sheet
         self.image_tresh = sheet_tresh
         self.visual = visual
         self.with_markers = with_markers
-        self.bubble_count = self.QUESTION_COLUMNS * self.QUESTION_ROWS * self.BUBBLE_PER_QUESTION
+        self.bubble_count = QUESTION_COLUMNS * QUESTION_ROWS * BUBBLE_PER_QUESTION
 
     def make_detector(self, tresh=False):
         # Set our filtering parameters
@@ -176,10 +173,9 @@ class BubbleReader:
         # Detect empty blobs
         keypoints_empty = self.make_detector(tresh=True).detect(self.image_tresh)
         keypoints = keypoints_filled + keypoints_empty
-        number_of_valid_keypoints = self.BUBBLE_PER_QUESTION * self.QUESTION_ROWS * self.QUESTION_COLUMNS
         if self.visual:
             print(len(keypoints))
-        if len(keypoints) != number_of_valid_keypoints and not self.visual:
+        if len(keypoints) != self.bubble_count and not self.visual:
             raise Exception(f"number of keypoints not valid. found {len(keypoints)}")
 
         return keypoints, keypoints_filled, keypoints_empty
@@ -187,10 +183,10 @@ class BubbleReader:
     def extract_choices(self, keypoints, keypoints_filled, keypoints_empty):
         choices = list()
         sorted_keypoints = list(sorted(keypoints, key=lambda x: (int(x.pt[1]), int(x.pt[0]))))
-        for row in range(self.QUESTION_ROWS):
+        for row in range(QUESTION_ROWS):
             whole_row = list(sorted(sorted_keypoints[
-                                    row * (self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION): (row + 1) * (
-                                            self.QUESTION_COLUMNS * self.BUBBLE_PER_QUESTION)],
+                                    row * (QUESTION_COLUMNS * BUBBLE_PER_QUESTION): (row + 1) * (
+                                            QUESTION_COLUMNS * BUBBLE_PER_QUESTION)],
                                     key=lambda x: (int(x.pt[0]), int(x.pt[1]))))
             if self.visual:
                 blobs = cv2.drawKeypoints(self.image, whole_row, np.zeros((1, 1)), BLUE,
@@ -199,8 +195,8 @@ class BubbleReader:
                                           cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
                 cv2.imshow("Filtering Circular Blobs Only", blobs)
                 cv2.waitKey(10)
-            for column in range(self.QUESTION_COLUMNS):
-                question = whole_row[column * self.BUBBLE_PER_QUESTION: (column + 1) * self.BUBBLE_PER_QUESTION]
+            for column in range(QUESTION_COLUMNS):
+                question = whole_row[column * BUBBLE_PER_QUESTION: (column + 1) * BUBBLE_PER_QUESTION]
                 choice = []
                 flag = 0
                 for i, bubble in enumerate(question):
@@ -222,7 +218,7 @@ class BubbleReader:
         # We do a bit of magic here
         choices.append(['ErfanTKErfan'])
         arr_2d = np.reshape(np.delete(np.array(choices, dtype=object), -1),
-                            (self.QUESTION_ROWS, self.QUESTION_COLUMNS)).transpose().flatten().tolist()
+                            (QUESTION_ROWS, QUESTION_COLUMNS)).transpose().flatten().tolist()
         return arr_2d
 
     def get_sheet_with_choices(self):
