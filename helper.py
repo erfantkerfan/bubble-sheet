@@ -176,7 +176,9 @@ class BubbleReader:
         keypoints_empty = self.make_detector(tresh=True).detect(self.image_tresh)
         keypoints = keypoints_filled + keypoints_empty
         number_of_valid_keypoints = self.BUBBLE_PER_QUESTION * self.QUESTION_ROWS * self.QUESTION_COLUMNS
-        if len(keypoints) != number_of_valid_keypoints:
+        if self.visual:
+            print(len(keypoints))
+        if len(keypoints) != number_of_valid_keypoints and not self.visual:
             raise Exception(f"number of keypoints not valid. found {len(keypoints)}")
 
         return keypoints, keypoints_filled, keypoints_empty
