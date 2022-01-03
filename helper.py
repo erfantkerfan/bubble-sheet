@@ -102,6 +102,7 @@ class SheetNormalizer:
         w = int(round(self.IMAGE_HEIGHT * self.frame.shape[1] / self.frame.shape[0]))
         self.frame = cv2.resize(self.frame, (w, self.IMAGE_HEIGHT), interpolation=cv2.INTER_LANCZOS4)
         temp = cv2.cvtColor(self.frame, cv2.COLOR_RGB2GRAY)
+        # temp = cv2.fastNlMeansDenoising(temp, None)
         self.frame_tresh = cv2.adaptiveThreshold(temp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 95,
                                                  7)
         self.frame = cv2.bitwise_not(self.frame_tresh)
