@@ -32,8 +32,8 @@
 ```json
 {
   "token": "hgRHGxrX6yd4Zz5gtSVxDkARcrkjAF_vf7PkkF8jDRA",
-  "path": "pics/alaa.jpg",
-  "path_choices": "output_pics/alaa.jpg"
+  "path": "pics/test.jpg",
+  "path_choices": "output_pics/test.jpg"
 }
 ```
 
@@ -48,7 +48,7 @@
 
 ```json
 {
-  "url": "https://nodes.alaatv.com/test/alaa.jpg"
+  "url": "https://nodes.alaatv.com/test/test.jpg"
 }
 ```
 
@@ -85,7 +85,7 @@
 ```json
 {
   "token": "hgRHGxrX6yd4Zz5gtSVxDkARcrkjAF_vf7PkkF8jDRA",
-  "path": "pics/alaa.jpg"
+  "path": "pics/test.jpg"
 }
 ```
 
@@ -99,7 +99,7 @@
 
 ```json
 {
-  "url": "https://nodes.alaatv.com/test/alaa.jpg"
+  "url": "https://nodes.alaatv.com/test/test.jpg"
 }
 ```
 
