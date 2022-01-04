@@ -46,7 +46,6 @@ async def load_image_minio(request):
     except:
         raise Exception("path is not valid")
     file_str = response.read()
-    print(type(file_str))
     np_img = np.frombuffer(file_str, np.uint8)
     image = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
     return image
