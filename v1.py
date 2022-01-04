@@ -26,7 +26,7 @@ async def minio_put(request, image):
         extension = pathlib.Path(path_choices).suffix
         is_success, buffer = cv2.imencode(extension, image)
         io_buf = io.BytesIO(buffer)
-        client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
+        client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'], secure=False)
         client.put_object(credentials['bucket'], path_choices, io_buf, -1, part_size=10 * 1024 * 1024)
 
     return path_choices
@@ -41,7 +41,7 @@ async def load_image_minio(request):
     credentials = client.json().get(f'bubblesheet:token:{token}')
 
     try:
-        client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
+        client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'], secure=False)
         response = client.get_object(credentials['bucket'], path)
     except:
         raise Exception("path is not valid")
@@ -220,7 +220,7 @@ async def generate(request: web.Request) -> web.Response:
     client = helper.establish_redis()
     credentials = client.json().get(f'bubblesheet:token:{token}')
 
-    client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'])
+    client = Minio(credentials['endpoint'], credentials['accessKey'], credentials['secretKey'], secure=False)
     client.put_object(credentials['bucket'], output_path, in_memory, -1, part_size=10 * 1024 * 1024)
     return web.Response(status=200)
 
@@ -250,7 +250,7 @@ async def detect(request: web.Request) -> web.Response:
         # detect and decode
         temp = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         frame_tresh = cv2.adaptiveThreshold(temp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 95,
-                                                 7)
+                                            7)
         data, vertices_array, binary_qrcode = detector.detectAndDecode(frame_tresh)
         # if there is a QR code
         if vertices_array is not None and len(data) != 0:
