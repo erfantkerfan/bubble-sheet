@@ -91,7 +91,7 @@ async def scan(request: web.Request) -> web.Response:
             status = 404
             return web.Response(status=status)
     except:
-        status = 500
+        status = 422
         text = "Some thing was wrong with source of image"
         return web.Response(status=status, text=text)
 
@@ -99,7 +99,7 @@ async def scan(request: web.Request) -> web.Response:
         sheet = helper.SheetNormalizer(image)
         frame, frame_tresh = sheet.get_adaptive_thresh()
     except:
-        status = 500
+        status = 422
         text = "Could not load the image properly"
         return web.Response(status=status, text=text)
     else:
@@ -107,7 +107,7 @@ async def scan(request: web.Request) -> web.Response:
         try:
             keypoints, keypoints_filled, keypoints_empty = detctor.detect_answers()
         except:
-            status = 500
+            status = 422
             text = "number of keypoints not valid"
             return web.Response(status=status, text=text)
         else:
@@ -239,7 +239,7 @@ async def detect(request: web.Request) -> web.Response:
             status = 404
             return web.Response(status=status)
     except:
-        status = 500
+        status = 422
         text = "Some thing was wrong with source of image"
         return web.Response(status=status, text=text)
 
@@ -256,10 +256,10 @@ async def detect(request: web.Request) -> web.Response:
             status = 200
             text = data
         else:
-            status = 500
+            status = 422
             text = "qr code could not be obtained"
         return web.json_response(status=status, text=text)
     except:
-        status = 500
+        status = 422
         text = "qrcode data could not be obtained"
         return web.json_response(status=status, text=text)
