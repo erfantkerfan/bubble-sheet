@@ -105,6 +105,16 @@ class SheetNormalizer:
         # temp = cv2.fastNlMeansDenoising(temp, None)
         self.frame_tresh = cv2.adaptiveThreshold(temp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 95,
                                                  7)
+        # this is a horizontal kernel
+        kernel = np.ones((1, 3), np.uint8)
+        d_im = cv2.dilate(temp, kernel, iterations=1)
+        temp = cv2.erode(d_im, kernel, iterations=1)
+
+        # this is a vertical kernel
+        kernel = np.ones((2, 1), np.uint8)
+        d_im = cv2.dilate(temp, kernel, iterations=1)
+        self.frame_tresh = cv2.erode(d_im, kernel, iterations=1)
+
         self.frame = cv2.bitwise_not(self.frame_tresh)
         # print(cv2.calcHist(self.frame, [0], None, [2], [0, 256]))
 
