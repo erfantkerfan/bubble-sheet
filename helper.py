@@ -119,8 +119,8 @@ class SheetNormalizer:
 
 
 class BubbleReader:
-    MIN_AREA = 220
-    MIN_AREA_WITH_TRESH = 200
+    MIN_AREA = 200
+    MIN_AREA_WITH_TRESH = 180
     MIN_CIRCULARITY = 0.6
     MIN_CONVEXITY = 0.7
     MIN_INERTIA_RATIO = 0.15
