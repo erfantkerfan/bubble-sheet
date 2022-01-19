@@ -100,10 +100,10 @@ class SheetNormalizer:
 
     def get_adaptive_thresh(self):
         w = int(round(self.IMAGE_HEIGHT * self.frame.shape[1] / self.frame.shape[0]))
-        self.frame = cv2.resize(self.frame, (w, self.IMAGE_HEIGHT), interpolation=cv2.INTER_LANCZOS4)
-        temp = cv2.cvtColor(self.frame, cv2.COLOR_RGB2GRAY)
+        temp = cv2.resize(self.frame, (w, self.IMAGE_HEIGHT), interpolation=cv2.INTER_LANCZOS4)
+        temp = cv2.cvtColor(temp, cv2.COLOR_RGB2GRAY)
         # temp = cv2.fastNlMeansDenoising(temp, None)
-        self.frame_tresh = cv2.adaptiveThreshold(temp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 95,
+        temp = cv2.adaptiveThreshold(temp, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 95,
                                                  7)
         # this is a horizontal kernel
         kernel = np.ones((1, 3), np.uint8)
