@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from cv2 import aruco
 
+from constants import *
+
 if __name__ == '__main__':
 
     cap = cv2.VideoCapture(0)
@@ -47,28 +49,35 @@ if __name__ == '__main__':
         fRvec, fTvec, _obj_points = cv2.aruco.estimatePoseSingleMarkers(corners, 30.0, cam_matrix, dist_coeffs)
 
         if len(corners) > 0:
+            angle = 0
+            center = np.zeros((4, 2))
             for i in range(len(ids)):
                 realCorners = corners[i].reshape((4, 2))
+                center += realCorners
                 (topLeft, topRight, bottomRight, bottomLeft) = realCorners
                 topRight = (int(topRight[0]), int(topRight[1]))
                 bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
                 bottomLeft = (int(bottomLeft[0]), int(bottomLeft[1]))
                 topLeft = (int(topLeft[0]), int(topLeft[1]))
 
-                frame = cv2.line(frame, topLeft, topRight, (0, 255, 0), 10)
-                frame = cv2.line(frame, topRight, bottomRight, (0, 255, 0), 10)
-                frame = cv2.line(frame, bottomRight, bottomLeft, (0, 255, 0), 10)
-                frame = cv2.line(frame, bottomLeft, topLeft, (0, 255, 0), 10)
+                line_thickness = 1
+                frame = cv2.line(frame, topLeft, topRight, GREEN, line_thickness)
+                frame = cv2.line(frame, topRight, bottomRight, GREEN, line_thickness)
+                frame = cv2.line(frame, bottomRight, bottomLeft, GREEN, line_thickness)
+                frame = cv2.line(frame, bottomLeft, topLeft, GREEN, line_thickness)
 
-                cX = int((topLeft[0] + bottomRight[0]) / 2.0)
-                cY = int((topLeft[1] + bottomRight[1]) / 2.0)
-                # frame = cv2.circle(frame, (cX, cY), 4, (0, 0, 255), -1)
-
-                # frame = cv2.putText(frame, ), (topLeft[0], topLeft[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                #                     (0, 0, 255), 2)
-
-                frame = cv2.putText(frame, str(rot_params_rv(fRvec)[2]), (topLeft[0], topLeft[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, cv2.LINE_AA)
-                frame = cv2.putText(frame, str(estimate_angle(rot_params_rv(fRvec)[2])), (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, cv2.LINE_AA)
+                frame = cv2.putText(frame, str(rot_params_rv(fRvec[i])[2]), (topLeft[0], topLeft[1]),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, RED, 1, cv2.LINE_AA)
+                frame = cv2.putText(frame, str(estimate_angle(rot_params_rv(fRvec[i])[2])),
+                                    (bottomRight[0], bottomRight[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, RED, 1,
+                                    cv2.LINE_AA)
+                angle += rot_params_rv(fRvec[i])[2]
+            if len(ids) == 4:
+                center /= 4
+                angle /= 4
+                x = (np.sum(center, 0) / 4).astype(int)
+                frame = cv2.putText(frame, str(estimate_angle(angle)), (x[0], x[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, RED,
+                                    1, cv2.LINE_AA)
 
         cv2.imshow('preview', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
