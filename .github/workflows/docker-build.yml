@@ -11,19 +11,6 @@ on:
     tags:
       - 'v*.*.*'
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Build & Publish Docker image
-
-on:
-  push:
-    branches: [ main ]
-    tags:
-      - 'v*.*.*'
-
 jobs:
   docker:
     runs-on: ubuntu-latest
