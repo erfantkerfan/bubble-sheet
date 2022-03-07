@@ -1,11 +1,8 @@
-FROM python:3.9
+FROM python:3.9-slim
 
 WORKDIR /code
 
-ENV NOTHING=0.0.0.0
-
-RUN apt-get update
-RUN apt install -y libgl1-mesa-glx
+RUN apt-get update && apt install -y libgl1-mesa-glx libglib2.0-0
 
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
