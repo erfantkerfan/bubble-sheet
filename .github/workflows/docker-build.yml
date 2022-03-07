@@ -27,13 +27,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
       -
         name: Build and push
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: erfantkerfan/bubble-sheet:${{ steps.get_version.outputs.VERSION }}
+          tags: erfantkerfan/bubble-sheet:${GITHUB_REF/refs\/tags\//}
 
