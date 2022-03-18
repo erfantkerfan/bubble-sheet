@@ -33,7 +33,7 @@ def token():
     print(secrets.token_urlsafe(32))
 
 
-def set_token():
+def set():
     data = {
         "endpoint": input('please enter an endpoint like "nodes.alaatv.com":'),
         "bucket": input('please enter your desired bucket like "pictures":'),
