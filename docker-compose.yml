@@ -12,3 +12,5 @@ services:
   redis:
     image: "redislabs/rejson:latest"
     restart: unless-stopped
+    volumes:
+      - ./redis_data:/data
