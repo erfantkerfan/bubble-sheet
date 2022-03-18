@@ -26,7 +26,7 @@ def create_app():
 
 
 if __name__ == '__main__':
-    VERSION = 'v1.2.2'
+    VERSION = 'v1.3.0'
 
     parser = argparse.ArgumentParser(description='Process bubble sheets.')
     parser.add_argument('-v', '--version', action='version', version=f'{VERSION}')
