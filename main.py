@@ -34,11 +34,10 @@ if __name__ == '__main__':
     parser.add_argument('-T', '--token', help="generate a url_safe token.", action="store_true")
     parser.add_argument('-s', '--set', help="set up a token for minio endpoint", action="store_true")
     parser.add_argument('-l', '--dump', help="show available credentials and tokens", action="store_true")
-    parser.add_argument('--migrate', help="export seeds folder to redis.", action="store_true")
     parser.add_argument('-p', '--port', help="accept port number defaults to 8080", default=8080, type=int)
     args = parser.parse_args()
 
-    command_list = ['test', 'token', 'set', 'dump', 'migrate']
+    command_list = ['test', 'token', 'set', 'dump']
     for command in command_list:
         if getattr(args, command, None):
             getattr(commands, command)()

@@ -53,11 +53,3 @@ def dump():
         user = client.json().get(key, Path.rootPath())
         user['token'] = str(key.decode('utf8'))
         pprint(user)
-
-
-def migrate():
-    client = helper.establish_redis()
-    from seeds import users
-    for user in tqdm(users):
-        token = user.pop('token')
-        client.json().set(f'bubblesheet:token:{token}', Path.rootPath(), user)
