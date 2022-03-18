@@ -1,18 +1,61 @@
+import cv2
 import io
+import numpy as np
 import pathlib
+import qrcode
+import secrets
 import urllib
 import zipfile
-from zipfile import ZipFile
-
-import cv2
-import numpy as np
-import qrcode
 from PIL import Image, ImageFont, ImageDraw
 from aiohttp import web
 from minio import Minio
+from redis.commands.json.path import Path
+from zipfile import ZipFile
 
 import helper
 from constants import *
+
+
+async def set_token(request):
+    body = await request.post()
+    master_token = body.get('master_token')
+    if master_token and master_token == MASTER_TOKEN:
+        data = {
+            "endpoint": body.get('endpoint'),
+            "bucket": body.get('bucket'),
+            "accessKey": body.get('access_key'),
+            "secretKey": body.get('secret_key'),
+        }
+        token = secrets.token_urlsafe(32)
+        client = helper.establish_redis()
+        client.json().set(f'bubblesheet:token:{token}', Path.rootPath(), data)
+
+        status = 200
+        text = token
+    else:
+        status = 401
+        text = "Unauthorized"
+    return web.Response(status=status, text=text)
+
+
+async def purge_token(request):
+    body = await request.post()
+    master_token = body.get('master_token')
+    token = body.get('token')
+    if master_token and master_token == MASTER_TOKEN and token:
+        client = helper.establish_redis()
+
+        if token == 'all':
+            client.flushdb()
+        else:
+            client.json().delete(f'bubblesheet:token:{token}', Path.rootPath())
+
+        status = 200
+        text = 'OK'
+    else:
+        status = 401
+        text = "Unauthorized"
+    return web.Response(status=status, text=text)
 
 
 async def minio_put(request, image):

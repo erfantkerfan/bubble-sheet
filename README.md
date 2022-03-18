@@ -1,11 +1,12 @@
-### Project setup with Docker:
+## Project setup with Docker:
 
 1. run `cp .env.example .env`
 2. configure `APP_PORT` as the web interface port the default is `8050`
-3. run `docker-compose up --build -d`
-4. in case it's needed to send any inside docker use `docker-compose exec web COMMAND`
+3. configure `MASTER_TOKEN` as the master token for administration
+4. run `docker-compose up --build -d`
+5. in case it's needed to send any inside docker use `docker-compose exec web python main.py --help`
 
-### api documentation
+## api documentation
 
 <details>
   <summary> health check </summary>
@@ -14,7 +15,7 @@
 
 </details>
 
-#### api v1 documentation
+### api v1 documentation
 
 <details>
   <summary> scan bubble-sheet sample response </summary>
@@ -38,7 +39,6 @@
 ```
 
 </details>
-
 
 
 <details>
@@ -161,6 +161,55 @@
       "qrcode": "61bdcea2cb14ea4181711919,111111113"
     }
   ]
+}
+```
+
+</details>
+
+##### administration
+
+<details>
+  <summary> generate a user token </summary>
+
+    POST `/api/v1/token/minio`
+
+```json
+{
+  "master_token": "PtXQe66HDpI4AVCFu5HSZBW7QEuCDwwuysDhs2hfpvo",
+  "endpoint": "nodes.alaatv.com",
+  "bucket": "test",
+  "access_key": "xxxxxxxxxxxxxxxxx",
+  "secret_key": "yyyyyyyyyyyyyyyyyy"
+}
+```
+
+</details>
+
+
+<details>
+  <summary> remove a user token </summary>
+
+    DELETE `/api/v1/token/minio`
+
+```json
+{
+  "master_token": "PtXQe66HDpI4AVCFu5HSZBW7QEuCDwwuysDhs2hfpvo",
+  "token": "rmT4WoMWYwrdjJF2hDs6bGEU9Uh-Ng3xK9rkLCVxd90"
+}
+```
+
+</details>
+
+
+<details>
+  <summary> remove all tokens </summary>
+
+    DELETE `/api/v1/token/minio`
+
+```json
+{
+  "master_token": "PtXQe66HDpI4AVCFu5HSZBW7QEuCDwwuysDhs2hfpvo",
+  "token": "all"
 }
 ```
 

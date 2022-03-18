@@ -15,7 +15,9 @@ def create_app():
     # Routes
     app.add_routes([
         web.get('/api/health/check', health),
-
+        # V1
+        web.post('/api/v1/token/minio', v1.set_token),
+        web.delete('/api/v1/token/minio', v1.purge_token),
         web.post('/api/v1/scan/{type}', v1.scan),
         web.post('/api/v1/generate/minio', v1.generate),
         web.post('/api/v1/detect/{type}', v1.detect),
@@ -24,7 +26,7 @@ def create_app():
 
 
 if __name__ == '__main__':
-    VERSION = 'v1.2.2'
+    VERSION = 'v1.3.0'
 
     parser = argparse.ArgumentParser(description='Process bubble sheets.')
     parser.add_argument('-v', '--version', action='version', version=f'{VERSION}')
@@ -32,11 +34,10 @@ if __name__ == '__main__':
     parser.add_argument('-T', '--token', help="generate a url_safe token.", action="store_true")
     parser.add_argument('-s', '--set', help="set up a token for minio endpoint", action="store_true")
     parser.add_argument('-l', '--dump', help="show available credentials and tokens", action="store_true")
-    parser.add_argument('--migrate', help="export seeds folder to redis.", action="store_true")
     parser.add_argument('-p', '--port', help="accept port number defaults to 8080", default=8080, type=int)
     args = parser.parse_args()
 
-    command_list = ['test', 'token', 'set', 'dump', 'migrate']
+    command_list = ['test', 'token', 'set', 'dump']
     for command in command_list:
         if getattr(args, command, None):
             getattr(commands, command)()
