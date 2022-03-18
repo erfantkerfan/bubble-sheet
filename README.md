@@ -4,7 +4,7 @@
 2. configure `APP_PORT` as the web interface port the default is `8050`
 3. configure `MASTER_TOKEN` as the master token for administration
 4. run `docker-compose up --build -d`
-5. in case it's needed to send any inside docker use `docker-compose exec web COMMAND`
+5. in case it's needed to send any inside docker use `docker-compose exec web python main.py --help`
 
 ## api documentation
 
