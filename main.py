@@ -15,7 +15,9 @@ def create_app():
     # Routes
     app.add_routes([
         web.get('/api/health/check', health),
-
+        # V1
+        web.post('/api/v1/token/minio', v1.set_token),
+        web.delete('/api/v1/token/minio', v1.purge_token),
         web.post('/api/v1/scan/{type}', v1.scan),
         web.post('/api/v1/generate/minio', v1.generate),
         web.post('/api/v1/detect/{type}', v1.detect),
