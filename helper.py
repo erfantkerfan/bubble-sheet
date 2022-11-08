@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import redis
 from cv2 import aruco
-from cv2 import cv2
 
 from constants import *
 
